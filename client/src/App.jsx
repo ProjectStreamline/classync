@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import CourseDetails from './components/fa/CourseDetails';
 import Registration from './pages/fa/Registration';
+import StudentData from './pages/fa/StudentData';
 
 const Loader = lazy(() => import('./components/Loader'));
 const Login = lazy(() => import('./pages/Login'));
@@ -16,6 +17,7 @@ function App() {
           {/* fa routes */}
           <Route path="/fa/dashboard" element={<FaDashboard />} />
           <Route path="/fa/registration" element={<Registration />} />
+          <Route path="/fa/student-data" element={<StudentData />} />
           <Route path="/fa/course/:id" element={<CourseDetails />} />
 
           {/* faculty routes */}

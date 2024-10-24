@@ -3,7 +3,7 @@ import iiitnLogo from '../../assets/iiitn.png';
 import { Link } from 'react-router-dom';
 const FaNavbar = () => {
   return (
-    <div className="bg-black text-white flex flex-col items-center m-8 p-4 rounded-xl sticky min-h-screen w-[15%]">
+    <div className="bg-black text-white flex flex-col items-center m-8 p-4 rounded-xl sticky min-h-screen w-[18%]">
       {/* name */}
       <div className="flex flex-col items-center mb-8">
         <div className="text-lg font-semibold text-heading">Dr. Nikhil</div>
