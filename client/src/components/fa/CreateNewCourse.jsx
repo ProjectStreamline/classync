@@ -29,6 +29,16 @@ const CreateNewCourse = () => {
     { label: 'Yes', value: 'Yes' },
     { label: 'No', value: 'No' },
   ];
+  const slots = [
+    { label: 'A', value: 'A' },
+    { label: 'B', value: 'B' },
+    { label: 'C', value: 'C' },
+    { label: 'D', value: 'D' },
+    { label: 'E', value: 'E' },
+    { label: 'F', value: 'F' },
+    { label: 'G', value: 'G' },
+    { label: 'H', value: 'H' },
+  ];
   const [openCourse, setOpenCourse] = useState(false);
   const [courseName, setCourseName] = useState('');
 
@@ -57,6 +67,8 @@ const CreateNewCourse = () => {
           </div>
           {/* semester */}
           <SelectDropdown label="Semester" options={semesters} />
+          {/* slot */}
+          <SelectDropdown label="Slot" options={slots} />
           {/* coursecode */}
           <SelectDropdown label="Course Code" options={courseCodes} />
           {/* course name */}

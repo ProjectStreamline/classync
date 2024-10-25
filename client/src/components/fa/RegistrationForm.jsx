@@ -1,67 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { ImCross } from 'react-icons/im';
-import MultiSelect from '../Multiselect';
+import MultiSelect from './Multiselect';
+import { FormContext } from '../../context/FormContext';
 import { Link } from 'react-router-dom';
 const RegistrationForm = () => {
-  const [isFloated, setIsFloated] = useState(false);
-  const slots = [
-    {
-      id: 'A',
-      courseOptions: [
-        { label: 'CSE 101', value: 'CSE 101' },
-        { label: 'CSE 102', value: 'CSE 102' },
-      ],
-    },
-    {
-      id: 'B',
-      courseOptions: [
-        { label: 'CSE 103', value: 'CSE 103' },
-        { label: 'CSE 104', value: 'CSE 104' },
-      ],
-    },
-    {
-      id: 'C',
-      courseOptions: [
-        { label: 'CSE 105', value: 'CSE 105' },
-        { label: 'CSE 106', value: 'CSE 106' },
-      ],
-    },
-    {
-      id: 'D',
-      courseOptions: [
-        { label: 'CSE 101', value: 'CSE 101' },
-        { label: 'CSE 102', value: 'CSE 102' },
-      ],
-    },
-    {
-      id: 'E',
-      courseOptions: [
-        { label: 'CSE 103', value: 'CSE 103' },
-        { label: 'CSE 104', value: 'CSE 104' },
-      ],
-    },
-    {
-      id: 'F',
-      courseOptions: [
-        { label: 'CSE 105', value: 'CSE 105' },
-        { label: 'CSE 106', value: 'CSE 106' },
-      ],
-    },
-    {
-      id: 'G',
-      courseOptions: [
-        { label: 'CSE 103', value: 'CSE 103' },
-        { label: 'CSE 104', value: 'CSE 104' },
-      ],
-    },
-    {
-      id: 'H',
-      courseOptions: [
-        { label: 'CSE 105', value: 'CSE 105' },
-        { label: 'CSE 106', value: 'CSE 106' },
-      ],
-    },
-  ];
+  const { isFloated, floatForm, slots } = useContext(FormContext);
 
   return (
     <div className="w-full flex flex-row justify-between sticky  min-h-screen m-4 ml-0">
@@ -73,7 +16,7 @@ const RegistrationForm = () => {
               <MultiSelect
                 key={slot.id}
                 id={slot.id}
-                courseOptions={slot.courseOptions}
+                courses={slot.courseOptions}
               />
             );
           })}
@@ -82,9 +25,9 @@ const RegistrationForm = () => {
       <div className="flex flex-col bg-card-bg rounded-xl min-w-[46%] m-4 p-6">
         <button
           className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4"
-          onClick={() => setIsFloated(!isFloated)}
+          onClick={floatForm}
         >
-          {isFloated ? 'Stop Registration' : 'Start Registration'}
+          {isFloated ? 'Registration Started' : 'Start Registration'}
         </button>
         <Link
           className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4 text-center"

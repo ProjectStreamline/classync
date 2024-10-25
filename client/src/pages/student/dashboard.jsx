@@ -1,12 +1,12 @@
-import Header from "../../components/Header"
+import Header from '../../components/student/Header';
 
 function Dashboard() {
   return (
-      <div>
-          <Header/>
+    <div>
+      <Header />
       hi
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
