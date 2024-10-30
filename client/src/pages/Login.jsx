@@ -1,51 +1,55 @@
 import { useContext, useState } from 'react';
-import { AuthContext } from '../context/Authcontext'; 
-
+import { AuthContext } from '../context/Authcontext';
+// import supabase from '../config/supabaseClient';
 const Login = () => {
+  // console.log(supabase);
+
   const { setEmail, setIsAuthenticated } = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = (e) => {
-  e.preventDefault();
-  
+    e.preventDefault();
 
-  const studentEmailPattern = /^bt21ece(0[0-9]{2}|1[01][0-9]|130)@iiitn\.ac\.in$/;
-  const isStudentEmail = studentEmailPattern.test(username);
-  
-  console.log(`Username: ${username}, Is Student Email: ${isStudentEmail}`); // Debugging line
+    const studentEmailPattern =
+      /^bt21ece(0[0-9]{2}|1[01][0-9]|130)@iiitn\.ac\.in$/;
+    const isStudentEmail = studentEmailPattern.test(username);
 
-  
-  if (isStudentEmail && password === '1') {
-    setEmail(username);
-    setIsAuthenticated(true);
-    window.location.href = '/student/dashboard'; // Redirect after successful login
-  } else if (username === 'fa' && password === 'fa') {
-    setEmail(username);
-    setIsAuthenticated(true);
-    window.location.href = '/fa/dashboard';
-  } else if (username === 'faculty' && password === 'faculty') {
-    setEmail(username);
-    setIsAuthenticated(true);
-    window.location.href = '/faculty/dashboard';
-  } else if (username === 'admin' && password === 'admin') {
-    setEmail(username);
-    setIsAuthenticated(true);
-    window.location.href = '/admin/dashboard';
-  } else {
-    setErrorMessage('Invalid username or password');
-  }
-};
+    console.log(`Username: ${username}, Is Student Email: ${isStudentEmail}`); // Debugging line
 
+    if (isStudentEmail && password === '1') {
+      setEmail(username);
+      setIsAuthenticated(true);
+      window.location.href = '/student/dashboard'; // Redirect after successful login
+    } else if (username === 'fa' && password === 'fa') {
+      setEmail(username);
+      setIsAuthenticated(true);
+      window.location.href = '/fa/dashboard';
+    } else if (username === 'faculty' && password === 'faculty') {
+      setEmail(username);
+      setIsAuthenticated(true);
+      window.location.href = '/faculty/dashboard';
+    } else if (username === 'admin' && password === 'admin') {
+      setEmail(username);
+      setIsAuthenticated(true);
+      window.location.href = '/admin/dashboard';
+    } else {
+      setErrorMessage('Invalid username or password');
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-screen items-center justify-center text-gray-600 bg-gray-50">
       <div className="relative">
         <div className="relative flex flex-col sm:w-[30rem] rounded-lg border-gray-400 bg-white shadow-lg px-4">
           <div className="flex-auto p-6">
-            <h4 className="mb-2 font-medium text-gray-700 xl:text-xl">Welcome!</h4>
-            <p className="mb-6 text-gray-500">Please sign-in to access your account</p>
+            <h4 className="mb-2 font-medium text-gray-700 xl:text-xl">
+              Welcome!
+            </h4>
+            <p className="mb-6 text-gray-500">
+              Please sign-in to access your account
+            </p>
             <form className="mb-4" onSubmit={handleLogin}>
               <div className="mb-4">
                 <label

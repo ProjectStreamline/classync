@@ -4,7 +4,7 @@ import MultiSelect from './Multiselect';
 import { FormContext } from '../../context/FormContext';
 import { Link } from 'react-router-dom';
 const RegistrationForm = () => {
-  const { isFloated, floatForm, slots } = useContext(FormContext);
+  const { isFloated, floatForm, courses, slots } = useContext(FormContext);
 
   return (
     <div className="w-full flex flex-row justify-between sticky  min-h-screen m-4 ml-0">
@@ -12,13 +12,9 @@ const RegistrationForm = () => {
         <h2 className="text-2xl font-bold m-4 ml-0">Registration Form</h2>
         <div className="">
           {slots.map((slot) => {
-            return (
-              <MultiSelect
-                key={slot.id}
-                id={slot.id}
-                courses={slot.courseOptions}
-              />
-            );
+            console.log(slot.id);
+
+            return <MultiSelect key={slot.id} slot={slot} />;
           })}
         </div>
       </div>
