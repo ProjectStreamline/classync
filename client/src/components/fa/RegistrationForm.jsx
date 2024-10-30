@@ -12,7 +12,7 @@ const RegistrationForm = () => {
         <h2 className="text-2xl font-bold m-4 ml-0">Registration Form</h2>
         <div className="">
           {slots.map((slot) => {
-            console.log(slot.id);
+            // console.log(slot.id);
 
             return <MultiSelect key={slot.id} slot={slot} />;
           })}

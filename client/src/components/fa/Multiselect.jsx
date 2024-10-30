@@ -8,8 +8,10 @@ const MultiSelect = ({ slot }) => {
 
   const handleChange = (course) => {
     setCourse(course);
-    console.log(course);
+    slots.courseOptions = course;
+    console.log(slot);
   };
+
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor="slot" className="text-lg font-bold text-card-text">

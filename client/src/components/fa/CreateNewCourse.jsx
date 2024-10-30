@@ -1,7 +1,33 @@
-import React, { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { ImCross } from 'react-icons/im';
 import SelectDropdown from './SelectDropdown';
+import { CourseContext } from '../../context/CourseContext';
+import supabase from '../../config/supabaseClient';
 const CreateNewCourse = () => {
+  // const { faculties } = useContext(CourseContext);
+  // console.log(faculties);
+  const [faculties, setFaculties] = useState([]);
+  const fetchFaculties = async () => {
+    const { data, error } = await supabase.from('faculties').select('*');
+    if (error) {
+      console.log(error);
+    }
+    if (data) {
+      setFaculties(data);
+      console.log(data);
+    }
+  };
+  useEffect(() => {
+    fetchFaculties();
+  }, []);
+  console.log(faculties);
+
+  const facultyData = faculties.map((faculty) => ({
+    label: faculty.faculty_name,
+    value: faculty.faculty_name,
+  }));
+  console.log(facultyData);
+
   const semesters = [
     { label: '1', value: '1' },
     { label: '2', value: '2' },
@@ -20,11 +46,11 @@ const CreateNewCourse = () => {
     { label: 'CSE 105', value: 'CSE 105' },
     { label: 'CSE 106', value: 'CSE 106' },
   ];
-  const faculties = [
-    { label: 'Dr. Nishant Namdev', value: 'Dr. Nishant Namdev' },
-    { label: 'Dr. Nishant Namdev', value: 'Dr. Nishant Namdev' },
-    { label: 'Dr. Nishant Namdev', value: 'Dr. Nishant Namdev' },
-  ];
+  // const faculties = [
+  //   { label: 'Dr. Nishant Namdev', value: 'Dr. Nishant Namdev' },
+  //   { label: 'Dr. Nishant Namdev', value: 'Dr. Nishant Namdev' },
+  //   { label: 'Dr. Nishant Namdev', value: 'Dr. Nishant Namdev' },
+  // ];
   const lab = [
     { label: 'Yes', value: 'Yes' },
     { label: 'No', value: 'No' },
@@ -67,8 +93,6 @@ const CreateNewCourse = () => {
           </div>
           {/* semester */}
           <SelectDropdown label="Semester" options={semesters} />
-          {/* slot */}
-          <SelectDropdown label="Slot" options={slots} />
           {/* coursecode */}
           <SelectDropdown label="Course Code" options={courseCodes} />
           {/* course name */}
@@ -88,7 +112,7 @@ const CreateNewCourse = () => {
             />
           </div>
           {/* faculty */}
-          <SelectDropdown label="Faculty" options={faculties} />
+          <SelectDropdown label="Faculty" options={facultyData} />
           {/* lab */}
           <SelectDropdown label="Lab" options={lab} />
 

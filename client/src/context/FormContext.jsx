@@ -25,27 +25,35 @@ export const FormProvider = ({ children }) => {
   const slots = [
     {
       id: 'A',
+      courseOptions: [],
     },
     {
       id: 'B',
+      courseOptions: [],
     },
     {
       id: 'C',
+      courseOptions: [],
     },
     {
       id: 'D',
+      courseOptions: [],
     },
     {
       id: 'E',
+      courseOptions: [],
     },
     {
       id: 'F',
+      courseOptions: [],
     },
     {
       id: 'G',
+      courseOptions: [],
     },
     {
       id: 'H',
+      courseOptions: [],
     },
   ];
 
