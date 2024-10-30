@@ -4,40 +4,27 @@ import SelectDropdown from './SelectDropdown';
 import { CourseContext } from '../../context/CourseContext';
 import supabase from '../../config/supabaseClient';
 const CreateNewCourse = () => {
-  // const { faculties } = useContext(CourseContext);
-  // console.log(faculties);
-  const [faculties, setFaculties] = useState([]);
-  const fetchFaculties = async () => {
-    const { data, error } = await supabase.from('faculties').select('*');
-    if (error) {
-      console.log(error);
-    }
-    if (data) {
-      setFaculties(data);
-      console.log(data);
-    }
-  };
+  const { faculties, fetchFaculties } = useContext(CourseContext);
   useEffect(() => {
     fetchFaculties();
   }, []);
-  console.log(faculties);
-
+  // console.log(faculties);
   const facultyData = faculties.map((faculty) => ({
     label: faculty.faculty_name,
     value: faculty.faculty_name,
   }));
-  console.log(facultyData);
+  // console.log(facultyData);
 
-  const semesters = [
-    { label: '1', value: '1' },
-    { label: '2', value: '2' },
-    { label: '3', value: '3' },
-    { label: '4', value: '4' },
-    { label: '5', value: '5' },
-    { label: '6', value: '6' },
-    { label: '7', value: '7' },
-    { label: '8', value: '8' },
-  ];
+  // const semesters = [
+  //   { label: '1', value: '1' },
+  //   { label: '2', value: '2' },
+  //   { label: '3', value: '3' },
+  //   { label: '4', value: '4' },
+  //   { label: '5', value: '5' },
+  //   { label: '6', value: '6' },
+  //   { label: '7', value: '7' },
+  //   { label: '8', value: '8' },
+  // ];
   const courseCodes = [
     { label: 'CSE 101', value: 'CSE 101' },
     { label: 'CSE 102', value: 'CSE 102' },
@@ -92,9 +79,21 @@ const CreateNewCourse = () => {
             </button>
           </div>
           {/* semester */}
-          <SelectDropdown label="Semester" options={semesters} />
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="courseCode"
+              className="text-lg font-bold text-card-text"
+            >
+              Semester
+            </label>
+            <p className="border bg-white border-gray-300 rounded-md p-2">7</p>
+          </div>
           {/* coursecode */}
-          <SelectDropdown label="Course Code" options={courseCodes} />
+          <SelectDropdown
+            label="Course Code"
+            options={courseCodes}
+            isSearchable={true}
+          />
           {/* course name */}
           <div className="flex flex-col gap-2">
             <label
@@ -112,9 +111,13 @@ const CreateNewCourse = () => {
             />
           </div>
           {/* faculty */}
-          <SelectDropdown label="Faculty" options={facultyData} />
+          <SelectDropdown
+            label="Faculty"
+            options={facultyData}
+            isSearchable={false}
+          />
           {/* lab */}
-          <SelectDropdown label="Lab" options={lab} />
+          <SelectDropdown label="Lab" options={lab} isSearchable={false} />
 
           <button className="text-navbar-text font-bold w-full bg-navbar-bg h-12 rounded-lg mt-3">
             Create Course
