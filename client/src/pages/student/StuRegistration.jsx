@@ -9,26 +9,27 @@ const StuRegistration = () => {
   const { isFloated, slots } = useContext(FormContext);
   const [selectedOption, setSelectedOption] = useState(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+
   
 
   const studentEmail = email.replace('@iiitn.ac.in', '');
 
 
 
-  const testConnection = async () => {
+// const testConnection = async () => {
 
-const { data, error } = await supabase.from('students').select('*');
+// const { data, error } = await supabase.from('students').select('*');
 
-  if (error) {
-    console.error('Error fetching data:', error);
-  } else {
-    console.log('Data fetched successfully:', data);
-  }
-};
+//   if (error) {
+//     console.error('Error fetching data:', error);
+//   } else {
+//     console.log('Data fetched successfully:', data);
+//   }
+// };
 
-useEffect(() => {
-  testConnection();
-}, []);
+// useEffect(() => {
+//   testConnection();
+// }, []);
 
 
   useEffect(() => {

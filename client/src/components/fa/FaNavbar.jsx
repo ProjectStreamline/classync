@@ -1,7 +1,18 @@
-import React from 'react';
+import {useContext} from 'react';
 import iiitnLogo from '../../assets/iiitn.png';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/Authcontext';
 const FaNavbar = () => {
+  const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+
+  const handlelogout = () => {
+    logout();    // First, clear the auth state
+    setTimeout(() => {
+      navigate('/',{ replace: true });
+    }, 0);
+  }
   return (
     <div className="bg-black text-white flex flex-col items-center m-8 p-4 rounded-xl sticky min-h-screen w-[18%]">
       {/* name */}
@@ -37,7 +48,7 @@ const FaNavbar = () => {
 
       {/* logout */}
       <div className="mt-auto mb-8">
-        <div className="bg-white text-black rounded-full w-32 h-12 flex items-center justify-center hover:text-black hover:bg-blue-500 duration-500">
+        <div className="bg-white text-black rounded-full w-32 h-12 flex items-center justify-center hover:text-black hover:bg-blue-500 duration-500" onClick={handlelogout}>
           Logout
         </div>
       </div>
