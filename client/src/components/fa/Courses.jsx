@@ -1,77 +1,14 @@
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import CourseCard from './CourseCard';
 import CreateNewCourse from './CreateNewCourse';
+import { FormContext } from '../../context/FormContext';
 
 const Courses = () => {
-  const courses = [
-    {
-      code: 'MAL106',
-      name: 'Probability and Statistics',
-      faculty: 'Dr. Nishant Namdev',
-      credits: 4,
-      classroom: 'Room No. 301',
-      startDate: '5th January 2024',
-      endDate: '15th May 2024',
-      createdDate: '2nd January 2024',
-      lab: false,
-    },
-    {
-      code: 'ILA107',
-      name: 'Intro to Linear Algebra',
-      faculty: 'Dr. Kamaljeet',
-      credits: 4,
-      classroom: 'Room No. 302',
-      startDate: '5th January 2024',
-      endDate: '15th May 2024',
-      createdDate: '2nd January 2024',
-      lab: true,
-    },
-    {
-      code: 'MAL106',
-      name: 'Probability and Statistics',
-      faculty: 'Dr. Nishant Namdev',
-      credits: 4,
-      classroom: 'Room No. 301',
-      startDate: '5th January 2024',
-      endDate: '15th May 2024',
-      createdDate: '2nd January 2024',
-      lab: false,
-    },
-    {
-      code: 'ILA107',
-      name: 'Intro to Linear Algebra',
-      faculty: 'Dr. Kamaljeet',
-      credits: 4,
-      classroom: 'Room No. 302',
-      startDate: '5th January 2024',
-      endDate: '15th May 2024',
-      createdDate: '2nd January 2024',
-      lab: true,
-    },
-    {
-      code: 'MAL106',
-      name: 'Probability and Statistics',
-      faculty: 'Dr. Nishant Namdev',
-      credits: 4,
-      classroom: 'Room No. 301',
-      startDate: '5th January 2024',
-      endDate: '15th May 2024',
-      createdDate: '2nd January 2024',
-      lab: false,
-    },
-    {
-      code: 'ILA107',
-      name: 'Intro to Linear Algebra',
-      faculty: 'Dr. Kamaljeet',
-      credits: 4,
-      classroom: 'Room No. 302',
-      startDate: '5th January 2024',
-      endDate: '15th May 2024',
-      createdDate: '2nd January 2024',
-      lab: true,
-    },
-    // Add more courses as needed
-  ];
+  const { courses, fetchCourses } = useContext(FormContext);
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
   return (
     <div className="flex flex-col w-[40%] m-8 ml-0 bg-card-bg rounded-xl">
       <h2 className="text-2xl font-bold m-4">Manage Courses</h2>

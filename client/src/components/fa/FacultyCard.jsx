@@ -5,7 +5,7 @@ const FacultyCard = ({ faculty }) => {
     <div className="bg-white shadow-md rounded-xl p-4 m-4 cursor-pointer flex flex-row justify-between w-auto hover:bg-gray-200 duration-300">
       <div>
         <div className="font-bold text-xl mb-3">
-          <h3>{faculty.name}</h3>
+          <h3>{faculty.faculty_name}</h3>
         </div>
         <div className="text-sm text-gray-500">
           <p>{faculty.position}</p>

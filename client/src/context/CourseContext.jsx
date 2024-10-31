@@ -12,7 +12,7 @@ export const CourseProvider = ({ children }) => {
     }
     if (data) {
       setFaculties(data);
-      console.log(data);
+      // console.log(data);
     }
   };
   return (
