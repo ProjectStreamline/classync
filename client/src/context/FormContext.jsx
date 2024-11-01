@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import supabase from '../config/supabaseClient';
 
 export const FormContext = createContext();
@@ -27,41 +27,42 @@ export const FormProvider = ({ children }) => {
       // console.log(data);
     }
   };
+  const [slots, setSlots] = useState([
+    { id: 'A', courseOptions: [] },
+    { id: 'B', courseOptions: [] },
+    { id: 'C', courseOptions: [] },
+    { id: 'D', courseOptions: [] },
+    { id: 'E', courseOptions: [] },
+    { id: 'F', courseOptions: [] },
+    { id: 'G', courseOptions: [] },
+    { id: 'H', courseOptions: [] },
+  ]);
 
-  const slots = [
-    {
-      id: 'A',
-      courseOptions: [],
-    },
-    {
-      id: 'B',
-      courseOptions: [],
-    },
-    {
-      id: 'C',
-      courseOptions: [],
-    },
-    {
-      id: 'D',
-      courseOptions: [],
-    },
-    {
-      id: 'E',
-      courseOptions: [],
-    },
-    {
-      id: 'F',
-      courseOptions: [],
-    },
-    {
-      id: 'G',
-      courseOptions: [],
-    },
-    {
-      id: 'H',
-      courseOptions: [],
-    },
-  ];
+  const fetchCoursesForSlot = async (slotId) => {
+    const { data, error } = await supabase.from(`slot_${slotId}`).select('*');
+    if (error) {
+      console.error(`Error fetching courses for slot ${slotId}:`, error);
+      return [];
+    }
+    return data.map((course) => ({
+      value: course.course_id,
+      label: course.course_name,
+    }));
+  };
+
+  const fetchAllSlots = async () => {
+    const updatedSlots = await Promise.all(
+      slots.map(async (slot) => {
+        const courseOptions = await fetchCoursesForSlot(slot.id);
+        return { ...slot, courseOptions };
+      })
+    );
+    setSlots(updatedSlots);
+  };
+
+  useEffect(() => {
+    fetchAllSlots();
+  }, []);
 
   const floatForm = () => {
     setIsFloated(true);

@@ -3,8 +3,10 @@ import { ImCross } from 'react-icons/im';
 import { CourseContext } from '../../context/CourseContext';
 import supabase from '../../config/supabaseClient';
 import Select from 'react-select';
+
 const CreateNewCourse = () => {
   const { faculties, fetchFaculties } = useContext(CourseContext);
+
   useEffect(() => {
     fetchFaculties();
   }, []);
@@ -32,6 +34,7 @@ const CreateNewCourse = () => {
       return;
     }
 
+    // Insert new course data
     const { data, error } = await supabase.from('courses').insert([
       {
         course_code: courseCode,
@@ -43,9 +46,18 @@ const CreateNewCourse = () => {
 
     if (error) {
       console.log(error);
+      return;
     }
-    if (data) {
-      console.log(data);
+
+    // Call the custom SQL function to create a new table for this course
+    const { error: tableError } = await supabase.rpc('create_course_table', {
+      course_name: courseName,
+    });
+
+    if (tableError) {
+      console.log('Error creating table:', tableError);
+    } else {
+      console.log('Course created successfully and table initialized');
     }
   };
 
@@ -58,10 +70,9 @@ const CreateNewCourse = () => {
         Create new Course
       </button>
       <div
-        className={`fixed flex justify-center items-center  w-full h-full p-5 top-0 left-0 ${
+        className={`fixed flex justify-center items-center w-full h-full p-5 top-0 left-0 ${
           openCourse ? 'block bg-black/30' : 'hidden'
         }`}
-        onClose={() => setOpenCourse(false)}
       >
         <form
           className="bg-card-bg w-fit h-fit rounded-lg p-5"
@@ -78,27 +89,17 @@ const CreateNewCourse = () => {
               Create New Course
             </h1>
           </div>
-          {/* semester */}
-          {/* <div className="flex flex-col gap-2">
-            <label
-              htmlFor="courseCode"
-              className="text-lg font-bold text-card-text"
-            >
-              Semester
-            </label>
-            <p className="border bg-white border-gray-300 rounded-md p-2">7</p>
-          </div> */}
-          {/* coursecode */}
+          {/* course code */}
           <div className="flex flex-col gap-2">
             <label
-              htmlFor="courseName"
+              htmlFor="courseCode"
               className="text-lg font-bold text-card-text"
             >
               Course Code
             </label>
             <input
               type="text"
-              placeholder="Enter Course Name"
+              placeholder="Enter Course Code"
               className="border border-gray-300 rounded-md p-2"
               value={courseCode}
               onChange={(e) => setCourseCode(e.target.value)}
@@ -123,7 +124,7 @@ const CreateNewCourse = () => {
           {/* faculty */}
           <div className="flex flex-col gap-2">
             <label
-              htmlFor="courseCode"
+              htmlFor="faculty"
               className="text-lg font-bold text-card-text"
             >
               Faculty
@@ -136,11 +137,10 @@ const CreateNewCourse = () => {
               className="h-10 min-w-96"
             />
           </div>
-
           {/* lab */}
           <div className="flex flex-col gap-2">
             <label
-              htmlFor="courseCode"
+              htmlFor="lab"
               className="text-lg font-bold text-card-text"
             >
               Lab
