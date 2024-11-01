@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../context/Authcontext';
 import supabase from '../../config/supabaseClient';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate ,Link} from 'react-router-dom';
 
 export default function FacultyDashboard() {
     const { email ,logout} = useContext(AuthContext);
@@ -34,7 +34,7 @@ export default function FacultyDashboard() {
                 setName(faculty_name);
 
                 // Log the faculty ID to ensure it's a valid number
-                console.log("Faculty ID:", facultyId);
+
 
                 // Ensure facultyId is a number
                 if (facultyId !== undefined && typeof facultyId === 'number') {
@@ -68,9 +68,10 @@ export default function FacultyDashboard() {
             <h2>Your Courses:</h2>
             <ul>
                 {courses.map((course, index) => (
-                    <li key={index}>
+                    <Link to={`/faculty/dashboard/${course.course_name}`} key={index}>
+                        <span> </span>
                         {course.course_name}
-                    </li>
+                    </Link>
                 ))}
             </ul>
             
