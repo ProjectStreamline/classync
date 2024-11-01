@@ -5,6 +5,7 @@ import Registration from './pages/fa/Registration';
 import Dashboard from './pages/student/dashboard';
 import StudentData from './pages/fa/StudentData';
 import StuRegistration from './pages/student/StuRegistration';
+import FacultyDashboard from './pages/faculty/facultyDashboard';
 const Loader = lazy(() => import('./components/Loader'));
 const Login = lazy(() => import('./pages/Login'));
 const FaDashboard = lazy(() => import('./pages/fa/FaDashboard'));
@@ -24,6 +25,7 @@ function App() {
 
           {/* faculty routes */}
           {/* student routes */}
+           <Route path="/faculty/dashboard" element={<FacultyDashboard/>} />
           <Route path="/student/dashboard" element={<Dashboard />} />
           <Route path="/student/registration" element={<StuRegistration />} />
         </Routes>

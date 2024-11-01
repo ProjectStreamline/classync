@@ -1,13 +1,14 @@
 import { useContext, useState } from 'react';
 import { AuthContext } from '../context/Authcontext';
-// import supabase from '../config/supabaseClient';
+
 const Login = () => {
-  // console.log(supabase);
+
 
   const { setEmail, setIsAuthenticated } = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const facultyEmails = ["rashmi@gmail.com", "kamjeet@gmail.com", "nishant@gmail.com"];
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -26,7 +27,7 @@ const Login = () => {
       setEmail(username);
       setIsAuthenticated(true);
       window.location.href = '/fa/dashboard';
-    } else if (username === 'faculty' && password === 'faculty') {
+    } else if (facultyEmails.includes(username) && password === '1') {
       setEmail(username);
       setIsAuthenticated(true);
       window.location.href = '/faculty/dashboard';
