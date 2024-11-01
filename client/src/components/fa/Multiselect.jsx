@@ -1,9 +1,10 @@
 import { useState, useContext, useEffect } from 'react';
 import Select from 'react-select';
 import { FormContext } from '../../context/FormContext';
+
 const MultiSelect = ({ slot }) => {
-  // const [slot, setSlot] = useState(slot);
   const [course, setCourse] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState([]);
   const { courses, slots, fetchCourses } = useContext(FormContext);
 
   useEffect(() => {
@@ -14,10 +15,19 @@ const MultiSelect = ({ slot }) => {
     label: course.course_name,
     value: course.course_code,
   }));
+
+  // course.map((c) => {
+  //   setSelectedCourse(c);
+  //   console.log(selectedCourse);
+  // });
+  // console.log(selectedCourse);
+  // const updatedCourses = coursesData.filter((c) => {
+  //   console.log(course);
+  //   c.value !== course.value;
+  // });
+  // console.log(updatedCourses);
   const handleChange = (course) => {
     setCourse(course);
-    slots.courseOptions = course;
-    console.log(slot);
   };
 
   return (
@@ -28,6 +38,7 @@ const MultiSelect = ({ slot }) => {
       <Select
         isMulti
         name="slot"
+        value={course}
         options={coursesData}
         onChange={handleChange}
         classNamePrefix="select"

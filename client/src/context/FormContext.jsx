@@ -9,20 +9,8 @@ export const FormProvider = ({ children }) => {
   );
 
   const [courses, setCourses] = useState([]);
-  // const courses = [
-  //   { value: 'ABC123', label: 'Technical Communication' },
-  //   { value: 'ABC456', label: 'PG&D' },
-  //   { value: 'XYZ123', label: 'TAI' },
-  //   { value: 'PQR123', label: 'NLUG' },
-  //   { value: 'ABC567', label: 'D&M' },
-  //   { value: 'XYZ234', label: 'FML' },
-  //   { value: 'PQR567', label: 'PI' },
-  //   { value: 'XYZ890', label: 'OC' },
-  //   { value: 'PQR890', label: 'IND-IOT' },
-  //   { value: 'ABC568', label: 'Robotics' },
-  //   { value: 'XYZ305', label: 'DIP' },
-  //   { value: 'PQR284', label: 'NNDL' },
-  // ];
+  const [selectedCourses, setSelectedCourses] = useState({});
+
   const fetchCourses = async () => {
     const { data, error } = await supabase.from('courses').select(`
       course_id, 
@@ -39,6 +27,7 @@ export const FormProvider = ({ children }) => {
       // console.log(data);
     }
   };
+
   const slots = [
     {
       id: 'A',
@@ -81,7 +70,14 @@ export const FormProvider = ({ children }) => {
 
   return (
     <FormContext.Provider
-      value={{ floatForm, isFloated, slots, courses, fetchCourses }}
+      value={{
+        floatForm,
+        isFloated,
+        slots,
+        courses,
+        fetchCourses,
+        selectedCourses,
+      }}
     >
       {children}
     </FormContext.Provider>

@@ -1,10 +1,9 @@
 import { useState, useContext } from 'react';
-import { ImCross } from 'react-icons/im';
 import MultiSelect from './Multiselect';
 import { FormContext } from '../../context/FormContext';
 import { Link } from 'react-router-dom';
 const RegistrationForm = () => {
-  const { isFloated, floatForm, courses, slots, fetchCourses } =
+  const { isFloated, floatForm, courses, slots, selectedCourses } =
     useContext(FormContext);
 
   return (
