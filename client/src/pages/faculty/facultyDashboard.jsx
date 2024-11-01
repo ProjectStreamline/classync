@@ -7,7 +7,8 @@ export default function FacultyDashboard() {
     const { email ,logout} = useContext(AuthContext);
     const [courses, setCourses] = useState([]);
     const [name, setName] = useState("");
-      const navigate = useNavigate(); 
+    const navigate = useNavigate(); 
+    
 
  const handlelogout = () => {
     logout();    // First, clear the auth state
