@@ -17,7 +17,7 @@ const RegistrationForm = () => {
     }));
   };
 
-  // Create form handler
+
   const handleCreateForm = async () => {
     console.log('Starting form creation...'); // Debugging line
     console.log('Selected courses:', selectedCourses); // Debugging line

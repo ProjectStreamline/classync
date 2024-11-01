@@ -19,7 +19,7 @@ const MultiSelect = ({ slot, onCourseSelect }) => {
   const handleChange = (selectedCourses) => {
     console.log(`Courses selected for slot ${slot.id}:`, selectedCourses); // Debugging line
     setCourse(selectedCourses);
-    onCourseSelect(slot.id, selectedCourses); // Pass slot ID and selected courses to parent
+    onCourseSelect(slot.id, selectedCourses);
   };
 
   return (

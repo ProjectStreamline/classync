@@ -7,47 +7,33 @@ import supabase from '../../config/supabaseClient';
 const StuRegistration = () => {
   const { email } = useContext(AuthContext);
   const { isFloated, slots } = useContext(FormContext);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedCourses, setSelectedCourses] = useState({});
   const [hasSubmitted, setHasSubmitted] = useState(false);
-
-  
 
   const studentEmail = email.replace('@iiitn.ac.in', '');
 
-
-
-// const testConnection = async () => {
-
-// const { data, error } = await supabase.from('students').select('*');
-
-//   if (error) {
-//     console.error('Error fetching data:', error);
-//   } else {
-//     console.log('Data fetched successfully:', data);
-//   }
-// };
-
-// useEffect(() => {
-//   testConnection();
-// }, []);
-
-
   useEffect(() => {
     const checkSubmissionStatus = async () => {
-  const { data, error } = await supabase
-    .from('students')
-    .select('hasSubmitted')
-    .eq('student_id', studentEmail)  // Use studentEmail directly, without adding the domain
-    .single();
-console.log(data)
-  if (error) {
-    console.error('Error checking submission status:', error);
-  } else {
-    setHasSubmitted(data?.hasSubmitted);
-  }
-};
+      const { data, error } = await supabase
+        .from('students')
+        .select('hasSubmitted')
+        .eq('student_id', studentEmail)
+        .single();
+      if (error) {
+        console.error('Error checking submission status:', error);
+      } else {
+        setHasSubmitted(data?.hasSubmitted);
+      }
+    };
     checkSubmissionStatus();
   }, [studentEmail]);
+
+  const handleSelectChange = (slotId, selected) => {
+    setSelectedCourses((prev) => ({
+      ...prev,
+      [slotId]: selected,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,25 +43,52 @@ console.log(data)
       return;
     }
 
-    const { data,error } = await supabase
-      .from('students')
-      .update({ hasSubmitted: true })
-      .eq('student_id', studentEmail);
-     
 
-    if (error) {
-      console.error('Error submitting the form:', error);
-      alert('An error occurred while submitting the form.');
-    } else {
-      setHasSubmitted(true);
-      console.log('working test',data)
-      alert('Form submitted successfully!');
+    console.log("Selected Courses before insert:", selectedCourses);
+
+    let submissionSuccessful = true; 
+
+    for (const slotId in selectedCourses) {
+      const selectedCourse = selectedCourses[slotId]?.value;
+      if (selectedCourse) {
+        console.log(`Attempting to insert into ${selectedCourse} for student ID ${studentEmail}`);
+
+        const { data, error } = await supabase
+          .from(selectedCourse) 
+          .insert({ student_id: studentEmail }); 
+
+        if (error) {
+          console.error(`Error inserting into ${selectedCourse}:`, error.message);
+          alert(`An error occurred while inserting into ${selectedCourse}. ${error.message}`);
+          submissionSuccessful = false; 
+        } else {
+          console.log(`Successfully inserted student ID ${studentEmail} into ${selectedCourse}`);
+        }
+      } else {
+        console.warn(`No course selected for slot ID ${slotId}`);
+      }
+    }
+
+    
+    if (submissionSuccessful) {
+      const { data, error } = await supabase
+        .from('students')
+        .update({ hasSubmitted: true })
+        .eq('student_id', studentEmail);
+
+      if (error) {
+        console.error('Error submitting the form:', error);
+        alert('An error occurred while submitting the form.');
+      } else {
+        setHasSubmitted(true);
+        alert('Form submitted successfully!');
+      }
     }
   };
 
   return (
     <div>
-      Student Registration
+      <h2>Student Registration</h2>
       <div>
         {isFloated ? (
           !hasSubmitted ? (
@@ -84,9 +97,12 @@ console.log(data)
                 <div key={slot.id}>
                   <label htmlFor={slot.id}>{slot.id}</label>
                   <Select
-                    options={slot.courseOptions}
-                    value={selectedOption}
-                    onChange={setSelectedOption}
+                    options={slot.courseOptions.map(option => ({
+                      value: option.label, 
+                      label: option.label, 
+                    }))}
+                    value={selectedCourses[slot.id] || null}
+                    onChange={(selected) => handleSelectChange(slot.id, selected)}
                   />
                 </div>
               ))}
