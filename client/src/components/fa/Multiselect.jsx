@@ -1,12 +1,13 @@
 import { useState, useContext, useEffect } from 'react';
 import Select from 'react-select';
 import { FormContext } from '../../context/FormContext';
-const MultiSelect = ({ slot }) => {
-  // const [slot, setSlot] = useState(slot);
+
+const MultiSelect = ({ slot, onCourseSelect }) => {
   const [course, setCourse] = useState([]);
-  const { courses, slots, fetchCourses } = useContext(FormContext);
+  const { courses, fetchCourses } = useContext(FormContext);
 
   useEffect(() => {
+    console.log('Fetching courses...'); // Debugging line
     fetchCourses();
   }, []);
 
@@ -14,10 +15,11 @@ const MultiSelect = ({ slot }) => {
     label: course.course_name,
     value: course.course_code,
   }));
-  const handleChange = (course) => {
-    setCourse(course);
-    slots.courseOptions = course;
-    console.log(slot);
+
+  const handleChange = (selectedCourses) => {
+    console.log(`Courses selected for slot ${slot.id}:`, selectedCourses); // Debugging line
+    setCourse(selectedCourses);
+    onCourseSelect(slot.id, selectedCourses); // Pass slot ID and selected courses to parent
   };
 
   return (
