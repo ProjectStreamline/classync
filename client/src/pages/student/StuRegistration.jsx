@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/Authcontext';
 import { FormContext } from '../../context/FormContext';
 import Select from 'react-select';
@@ -9,6 +9,8 @@ const StuRegistration = () => {
   const { isFloated, slots } = useContext(FormContext);
   const [selectedCourses, setSelectedCourses] = useState({});
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  console.log(isFloated);
+  // console.log(floatForm);
 
   const studentEmail = email.replace('@iiitn.ac.in', '');
 
@@ -43,33 +45,40 @@ const StuRegistration = () => {
       return;
     }
 
+    console.log('Selected Courses before insert:', selectedCourses);
 
-    console.log("Selected Courses before insert:", selectedCourses);
-
-    let submissionSuccessful = true; 
+    let submissionSuccessful = true;
 
     for (const slotId in selectedCourses) {
       const selectedCourse = selectedCourses[slotId]?.value;
       if (selectedCourse) {
-        console.log(`Attempting to insert into ${selectedCourse} for student ID ${studentEmail}`);
+        console.log(
+          `Attempting to insert into ${selectedCourse} for student ID ${studentEmail}`
+        );
 
         const { data, error } = await supabase
-          .from(selectedCourse) 
-          .insert({ student_id: studentEmail }); 
+          .from(selectedCourse)
+          .insert({ student_id: studentEmail });
 
         if (error) {
-          console.error(`Error inserting into ${selectedCourse}:`, error.message);
-          alert(`An error occurred while inserting into ${selectedCourse}. ${error.message}`);
-          submissionSuccessful = false; 
+          console.error(
+            `Error inserting into ${selectedCourse}:`,
+            error.message
+          );
+          alert(
+            `An error occurred while inserting into ${selectedCourse}. ${error.message}`
+          );
+          submissionSuccessful = false;
         } else {
-          console.log(`Successfully inserted student ID ${studentEmail} into ${selectedCourse}`);
+          console.log(
+            `Successfully inserted student ID ${studentEmail} into ${selectedCourse}`
+          );
         }
       } else {
         console.warn(`No course selected for slot ID ${slotId}`);
       }
     }
 
-    
     if (submissionSuccessful) {
       const { data, error } = await supabase
         .from('students')
@@ -89,6 +98,7 @@ const StuRegistration = () => {
   return (
     <div>
       <h2>Student Registration</h2>
+      {/* <button onClick={floatForm}>{isFloated ? 'Close' : 'Open'}</button> */}
       <div>
         {isFloated ? (
           !hasSubmitted ? (
@@ -97,12 +107,14 @@ const StuRegistration = () => {
                 <div key={slot.id}>
                   <label htmlFor={slot.id}>{slot.id}</label>
                   <Select
-                    options={slot.courseOptions.map(option => ({
-                      value: option.label, 
-                      label: option.label, 
+                    options={slot.courseOptions.map((option) => ({
+                      value: option.label,
+                      label: option.label,
                     }))}
                     value={selectedCourses[slot.id] || null}
-                    onChange={(selected) => handleSelectChange(slot.id, selected)}
+                    onChange={(selected) =>
+                      handleSelectChange(slot.id, selected)
+                    }
                   />
                 </div>
               ))}

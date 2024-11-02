@@ -1,15 +1,47 @@
-import { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import supabase from '../config/supabaseClient';
 
 export const FormContext = createContext();
 
 export const FormProvider = ({ children }) => {
-  const [isFloated, setIsFloated] = useState(
-    () => localStorage.getItem('isFloated') || false
-  );
+  const [isFloated, setIsFloated] = useState(false);
 
   const [courses, setCourses] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState({});
+  const [semester, setSemester] = useState(7);
+  const fetchIsFloated = async () => {
+    const { data, error } = await supabase
+      .from('form_status')
+      .select('isFloated')
+      .eq('semester', semester)
+      .single();
+
+    if (error) {
+      console.log('error fetching isFloated', error);
+    }
+    if (data) {
+      console.log(data.isFloated);
+      setIsFloated(data.isFloated);
+    }
+  };
+
+  useEffect(() => {
+    fetchIsFloated();
+  }, []);
+
+  const toggleIsFloated = async () => {
+    const newIsFloated = !isFloated;
+    setIsFloated(newIsFloated);
+
+    const { data, error } = await supabase
+      .from('form_status')
+      .update({ isFloated: newIsFloated })
+      .eq('semester', semester);
+
+    if (error) {
+      console.log('error updating isFloated', error);
+    }
+  };
 
   const fetchCourses = async () => {
     const { data, error } = await supabase.from('courses').select(`
@@ -64,16 +96,11 @@ export const FormProvider = ({ children }) => {
     fetchAllSlots();
   }, []);
 
-  const floatForm = () => {
-    setIsFloated(true);
-    localStorage.setItem('isFloated', JSON.stringify(true));
-  };
-
   return (
     <FormContext.Provider
       value={{
-        floatForm,
         isFloated,
+        toggleIsFloated,
         slots,
         courses,
         fetchCourses,

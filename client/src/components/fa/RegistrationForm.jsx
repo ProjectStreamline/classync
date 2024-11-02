@@ -5,7 +5,7 @@ import { FormContext } from '../../context/FormContext';
 import supabase from '../../config/supabaseClient';
 
 const RegistrationForm = () => {
-  const { isFloated, floatForm, slots } = useContext(FormContext);
+  const { isFloated, toggleIsFloated, slots } = useContext(FormContext);
   const [selectedCourses, setSelectedCourses] = useState({});
 
   // Collect selected courses for each slot
@@ -68,9 +68,9 @@ const RegistrationForm = () => {
         </button>
         <button
           className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4"
-          onClick={floatForm}
+          onClick={toggleIsFloated}
         >
-          {isFloated ? 'Registration Started' : 'Start Registration'}
+          {isFloated ? 'Stop Registration' : 'Start Registration'}
         </button>
         <Link
           className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4 text-center"

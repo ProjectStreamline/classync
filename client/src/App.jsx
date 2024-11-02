@@ -28,13 +28,13 @@ function App() {
           {/* student routes */}
 
           <Route path="/faculty/dashboard/" element={<FacultyDashboard />} />
-          <Route path="/faculty/dashboard/:course" element={<FacultyCourse/>} />
-
-          
+          <Route
+            path="/faculty/dashboard/:course"
+            element={<FacultyCourse />}
+          />
 
           <Route path="/student/dashboard" element={<Dashboard />} />
           <Route path="/student/registration" element={<StuRegistration />} />
-
         </Routes>
       </Suspense>
     </BrowserRouter>
