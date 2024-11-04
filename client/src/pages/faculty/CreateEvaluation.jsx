@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../../config/supabaseClient';
+import EnterMarks from '../../components/faculty/EnterMarks';
 
 const CreateEvaluation = () => {
   const { course } = useParams();
@@ -61,6 +62,7 @@ const CreateEvaluation = () => {
           <button type="submit">Add evaluation</button>
         </form>
       </div>
+      <EnterMarks />
     </div>
   );
 };
