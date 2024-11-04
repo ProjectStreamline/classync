@@ -9,10 +9,10 @@ export default function Header() {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const navigate = useNavigate(); 
 
-  const handlelogout = () => {
+  const handleLogout = () => {
     logout();    // First, clear the auth state
     setTimeout(() => {
-      navigate('/',{ replace: true });
+      navigate('/', { replace: true });
     }, 0);
   }
 
@@ -39,20 +39,31 @@ export default function Header() {
   const handleRegisterClick = () => {
     navigate('/student/registration');
   };
+  
+  const handleBotClick = () => {
+    navigate('/student/bot');
+  };
 
-  const Register = hasSubmitted ? (
+  const RegisterButton = hasSubmitted ? (
     <div></div>
   ) : (
-    <button className="p-2 bg-red-400" onClick={handleRegisterClick} style={{ cursor: 'pointer' }}>
+    <button className="p-2 bg-red-500 text-white hover:bg-red-600 transition duration-200" onClick={handleRegisterClick}>
       Register
     </button>
   );
 
   return (
-    <div className="bg-blue-600 text-gray-200 p-4 text-lg">
-      {Register}
-      <h1>{email ? `${email}` : ''}</h1>
-      <button onClick={handlelogout}>Logout</button>
-    </div>
+    <nav className="bg-blue-700 text-gray-200 p-4 flex justify-between items-center">
+      <h1 className="text-xl font-bold">{email ? `${email}` : ''}</h1>
+      <div className="flex space-x-4">
+        {RegisterButton}
+        <button className="p-2 bg-gray-800 text-white hover:bg-gray-700 transition duration-200" onClick={handleLogout}>
+          Logout
+        </button>
+        <button className="p-2 bg-gray-600 text-white hover:bg-gray-500 transition duration-200" onClick={handleBotClick}>
+          GO to Bot
+        </button>
+      </div>
+    </nav>
   );
 }

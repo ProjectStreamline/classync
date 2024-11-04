@@ -2,9 +2,12 @@ import Header from '../../components/student/Header';
 
 function Dashboard() {
   return (
-    <div>
+    <div style={{ height: '100vh', overflow: 'hidden' }}>
       <Header />
-      hi
+      <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', marginTop: '20px' }}>
+        <h2>Welcome to the Dashboard!</h2>
+        <p>Here is where you can manage your courses and activities.</p>
+      </div>
     </div>
   );
 }

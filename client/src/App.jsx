@@ -9,6 +9,7 @@ import FacultyDashboard from './pages/faculty/facultyDashboard';
 import FacultyCourse from './pages/faculty/FacultyCourse';
 import RegisteredStudents from './pages/faculty/RegisteredStudents';
 import CreateEvaluation from './pages/faculty/CreateEvaluation';
+import Bot from './pages/student/bot';
 const Loader = lazy(() => import('./components/Loader'));
 const Login = lazy(() => import('./pages/Login'));
 const FaDashboard = lazy(() => import('./pages/fa/FaDashboard'));
@@ -45,6 +46,7 @@ function App() {
 
           <Route path="/student/dashboard" element={<Dashboard />} />
           <Route path="/student/registration" element={<StuRegistration />} />
+           <Route path="/student/bot" element={<Bot/>} />
         </Routes>
       </Suspense>
     </BrowserRouter>
