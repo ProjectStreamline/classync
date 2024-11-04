@@ -7,7 +7,7 @@ const CreateEvaluation = () => {
   const { course } = useParams();
   const [evalName, setEvalName] = useState('');
   const [maxMarks, setMaxMarks] = useState(0);
-  const [columnName, setColumnName] = useState('');
+  // const [columnName, setColumnName] = useState('');
   console.log(evalName + '/' + maxMarks);
 
   const handleSubmit = async (e) => {
@@ -19,6 +19,7 @@ const CreateEvaluation = () => {
     }
     // setColumnName(evalName + '/' + maxMarks);
     try {
+      //adding column in course table
       const { data, error } = await supabase.rpc('add_evaluation_column', {
         course_table: course,
         column_name: evalName,
@@ -28,6 +29,26 @@ const CreateEvaluation = () => {
         console.error('Error adding column:', error);
       } else {
         console.log('Evaluation column added:', data);
+      }
+
+      //updating evaluations table
+      const { data: evalData, error: evalError } = await supabase
+        .from('evaluations')
+        .insert([
+          {
+            eval_name: evalName,
+            course_name: course,
+            max_marks: maxMarks,
+          },
+        ]);
+
+      if (evalError) {
+        console.error('Error adding evaluation:', evalError);
+      } else {
+        console.log('Evaluation added:', evalData);
+        // Reset form fields after successful submission
+        setEvalName('');
+        setMaxMarks(0);
       }
     } catch (error) {
       console.error('Unexpected error:', error);

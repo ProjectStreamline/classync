@@ -7,6 +7,8 @@ const EnterMarks = () => {
   const [students, setStudents] = useState([]);
   const [evaluations, setEvaluations] = useState([]);
   const [marks, setMarks] = useState({});
+  const [maxMarks, setMaxMarks] = useState(0);
+  const [evalName, setEvalName] = useState('');
   useEffect(() => {
     const CourseStudents = async () => {
       try {
@@ -57,9 +59,30 @@ const EnterMarks = () => {
         console.error('Error fetching schema or data:', error);
       }
     };
+
+    //fetch max marks
+    const fetchEvaluations = async () => {
+      const { data, error } = await supabase
+        .from('evaluations')
+        .select('max_marks')
+        .eq('course_name', course)
+        .eq('eval_name', evalName);
+
+      if (error) {
+        console.error('Error fetching evaluations:', error);
+      }
+      if (data) {
+        console.log(data[0].max_marks);
+        setMaxMarks(data[0].max_marks);
+      }
+    };
+
     CourseStudents();
-  }, [course]);
+    fetchEvaluations();
+  }, [course, evalName]);
+
   const handleMarkChange = (studentId, evalName, value) => {
+    setEvalName(evalName);
     setMarks((prev) => ({
       ...prev,
       [studentId]: {
@@ -68,13 +91,19 @@ const EnterMarks = () => {
       },
     }));
   };
+
   const handleMarkSubmit = async (studentId, evalName) => {
     const mark = marks[studentId]?.[evalName];
+    console.log(mark);
+    if (mark > maxMarks) {
+      alert('Marks cannot be greater than max marks');
+      return;
+    }
     if (mark === undefined) return;
 
     try {
       const { error } = await supabase
-        .from(course) // Use course name as table name
+        .from(course)
         .update({ [evalName]: mark })
         .match({ student_id: studentId });
 
@@ -101,6 +130,7 @@ const EnterMarks = () => {
       }
     }
   };
+
   return (
     <div>
       <p>EnterMarks</p>
