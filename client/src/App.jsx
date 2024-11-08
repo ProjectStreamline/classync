@@ -13,6 +13,7 @@ const Loader = lazy(() => import("./components/Loader"));
 const Login = lazy(() => import("./pages/Login"));
 const FaDashboard = lazy(() => import("./pages/fa/FaDashboard"));
 import GenerateNotice from "./pages/fa/GenerateNotice";
+import Bot from "./pages/student/bot";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
 
           <Route path="/student/dashboard" element={<Dashboard />} />
           <Route path="/student/registration" element={<StuRegistration />} />
+          <Route path="/student/bot" element={<Bot />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
