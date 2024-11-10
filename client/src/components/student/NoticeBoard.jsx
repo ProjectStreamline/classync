@@ -18,11 +18,19 @@ const NoticeBoard = () => {
             params: { batch, branch, studentId },
           }
         );
-        setNotices(response.data.notices);
+
+        const allNotices = response.data.notices;
+        const relevantNotices = allNotices.filter((notice) => {
+          return (
+            notice.studentIds.includes(studentId) ||
+            notice.studentIds.includes("all")
+          );
+        });
+
+        setNotices(relevantNotices);
       } catch (error) {
         console.error("Error fetching notices", error);
       }
-      ``;
     };
     fetchNotices();
   }, [batch, branch, studentId]);

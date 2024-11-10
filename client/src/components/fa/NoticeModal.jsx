@@ -8,44 +8,60 @@ const Modal = ({ onClose }) => {
   const [noticeContent, setNoticeContent] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Function to handle sending the notice
   const handleSendNotice = async () => {
-    // Extract the student ID without the email domain
-    const idsArray = studentIds.split(",").map((id) => id.trim().split("@")[0]);
+    const idsArray = studentIds.split(",").map((id) => id.trim());
 
-    // Regular expression pattern to validate student IDs
     const pattern = new RegExp(`^${batch}${branch}(0[0-9]{2}|1[01][0-9]|130)$`);
 
-    // Filter out invalid student IDs
-    const invalidIds = idsArray.filter((id) => !pattern.test(id));
+    const sendToAll = idsArray.includes("all");
 
-    if (invalidIds.length > 0) {
-      // Show error message if there are invalid IDs
-      setErrorMessage(
-        `Invalid IDs for batch ${batch} and branch ${branch}: ${invalidIds.join(
-          ", "
-        )}`
-      );
-    } else {
-      setErrorMessage("");
-      try {
-        // Sending the POST request to the backend
-        const response = await axios.post("http://localhost:5000/api/notices", {
-          batch,
-          branch,
-          studentIds: idsArray,
-          notice: noticeContent,
-        });
+    if (!sendToAll) {
+      const invalidIds = idsArray.filter((id) => !pattern.test(id));
 
-        if (response.status === 201) {
-          alert("Notice sent successfully!");
-          onClose(); // Close the modal after successful submission
-        }
-      } catch (error) {
-        console.error("Error sending notice:", error);
-        setErrorMessage("Failed to send notice. Please try again.");
+      if (invalidIds.length > 0) {
+        setErrorMessage(
+          `Invalid IDs for batch ${batch} and branch ${branch}: ${invalidIds.join(
+            ", "
+          )}`
+        );
+        return;
       }
     }
+
+    setErrorMessage("");
+
+    const payload = {
+      batch,
+      branch,
+      studentIds: sendToAll ? getAllBatchIds(batch) : idsArray,
+      notice: noticeContent,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/notices",
+        payload
+      );
+
+      if (response.status === 201) {
+        alert("Notice sent successfully!");
+        onClose();
+      } else {
+        alert("Failed to send notice");
+      }
+    } catch (error) {
+      console.error("Error sending notice:", error);
+      alert("An error occurred while sending the notice.");
+    }
+  };
+
+  const getAllBatchIds = (batch) => {
+    const ids = [];
+    for (let i = 1; i <= 130; i++) {
+      const id = `${batch}ece${i.toString().padStart(3, "0")}`;
+      ids.push(id);
+    }
+    return ids;
   };
 
   return (
@@ -79,7 +95,7 @@ const Modal = ({ onClose }) => {
           </label>
           <input
             type="text"
-            placeholder="Enter student IDs, separated by commas"
+            placeholder='Enter student IDs, separated by commas or type "all"'
             value={studentIds}
             onChange={(e) => setStudentIds(e.target.value)}
             className="w-full mb-4 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
