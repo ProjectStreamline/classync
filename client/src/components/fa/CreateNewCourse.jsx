@@ -59,6 +59,17 @@ const CreateNewCourse = () => {
     } else {
       console.log('Course created successfully and table initialized');
     }
+
+    //call the sql function to create a new table for attendance
+    const { error: attendanceTableError } = await supabase.rpc(
+      'create_attendance_table',
+      { course_name: courseName }
+    );
+    if (attendanceTableError) {
+      console.error('Error creating attendance table:', attendanceTableError);
+    } else {
+      console.log('Attendance table created successfully');
+    }
   };
 
   return (
@@ -139,10 +150,7 @@ const CreateNewCourse = () => {
           </div>
           {/* lab */}
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="lab"
-              className="text-lg font-bold text-card-text"
-            >
+            <label htmlFor="lab" className="text-lg font-bold text-card-text">
               Lab
             </label>
             <Select
