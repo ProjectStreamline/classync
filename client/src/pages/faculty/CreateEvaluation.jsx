@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../../config/supabaseClient';
 import EnterMarks from '../../components/faculty/EnterMarks';
@@ -7,19 +7,15 @@ const CreateEvaluation = () => {
   const { course } = useParams();
   const [evalName, setEvalName] = useState('');
   const [maxMarks, setMaxMarks] = useState(0);
-  // const [columnName, setColumnName] = useState('');
-  console.log(evalName + '/' + maxMarks);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(evalName, maxMarks);
     if (!evalName || !maxMarks) {
       alert('All the fields are required.');
       return;
     }
-    // setColumnName(evalName + '/' + maxMarks);
     try {
-      //adding column in course table
+      // Adding column in course table
       const { data, error } = await supabase.rpc('add_evaluation_column', {
         course_table: course,
         column_name: evalName,
@@ -31,7 +27,7 @@ const CreateEvaluation = () => {
         console.log('Evaluation column added:', data);
       }
 
-      //updating evaluations table
+      // Updating evaluations table
       const { data: evalData, error: evalError } = await supabase
         .from('evaluations')
         .insert([
@@ -46,7 +42,6 @@ const CreateEvaluation = () => {
         console.error('Error adding evaluation:', evalError);
       } else {
         console.log('Evaluation added:', evalData);
-        // Reset form fields after successful submission
         setEvalName('');
         setMaxMarks(0);
       }
@@ -54,33 +49,51 @@ const CreateEvaluation = () => {
       console.error('Unexpected error:', error);
     }
   };
+
   return (
-    <div>
-      <h1>Evaluation</h1>
-      <div>
-        <p>Add evaluation</p>
-        <form onSubmit={handleSubmit}>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Create Evaluation</h1>
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+        <p className="text-lg font-semibold text-gray-700 mb-4">Add Evaluation</p>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name">evaluation name</label>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Evaluation Name
+            </label>
             <input
               type="text"
               name="name"
+              id="name"
               value={evalName}
-              className="border border-black"
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => setEvalName(e.target.value)}
             />
           </div>
           <div>
-            <label htmlFor="marks">evaluation marks</label>
+            <label
+              htmlFor="marks"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Evaluation Marks
+            </label>
             <input
               type="text"
               name="marks"
+              id="marks"
               value={maxMarks}
-              className="border border-black"
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => setMaxMarks(e.target.value)}
             />
           </div>
-          <button type="submit">Add evaluation</button>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition duration-200"
+          >
+            Add Evaluation
+          </button>
         </form>
       </div>
       <EnterMarks />
