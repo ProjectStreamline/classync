@@ -55,7 +55,7 @@ const StuRegistration = () => {
         console.log(
           `Attempting to insert into ${selectedCourse} for student ID ${studentEmail}`
         );
-
+        // insert into courses table
         const { data, error } = await supabase
           .from(selectedCourse)
           .insert({ student_id: studentEmail });
@@ -72,6 +72,26 @@ const StuRegistration = () => {
         } else {
           console.log(
             `Successfully inserted student ID ${studentEmail} into ${selectedCourse}`
+          );
+        }
+
+        //insert into attendance table
+        const { data: attendanceData, error: attendanceError } = await supabase
+          .from(`${selectedCourse}_attendance`)
+          .insert({ student_id: studentEmail });
+
+        if (attendanceError) {
+          console.log(
+            `Error inserting into ${selectedCourse}_attendance:`,
+            attendanceError.message
+          );
+          alert(
+            `An error occurred while inserting into ${selectedCourse}. ${error.message}`
+          );
+          submissionSuccessful = false;
+        } else {
+          console.log(
+            `Successfully inserted student ID ${studentEmail} into ${selectedCourse}_attendance`
           );
         }
       } else {

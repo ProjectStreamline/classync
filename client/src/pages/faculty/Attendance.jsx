@@ -8,27 +8,43 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState({});
   const [attendanceDate, setAttendanceDate] = useState('');
   const [columns, setColumns] = useState([]);
-  const [columnExists, setColumnExists] = useState(false);
 
   useEffect(() => {
-    const fetchStudents = async () => {
-      const { data: studentData, error } = await supabase
-        .from(course + '_attendance')
-        .select('student_id');
+    // Fetch students and attendance columns
+    const fetchStudentsAndColumns = async () => {
+      try {
+        // Fetch students
+        const { data: studentData, error: studentError } = await supabase
+          .from(`${course}_attendance`)
+          .select('student_id');
 
-      if (error) {
-        console.error('Error fetching students:', error);
-      } else {
-        setStudents(studentData);
+        if (studentError) {
+          console.error('Error fetching students:', studentError);
+        } else {
+          setStudents(studentData);
+        }
+
+        // Fetch columns
+        const { data: columnData, error: columnError } = await supabase.rpc(
+          'get_columns',
+          { p_table_name: `${course}_attendance` }
+        );
+
+        if (columnError) {
+          console.error('Error fetching columns:', columnError);
+        } else {
+          const attendanceColumns = columnData
+            .map((col) => col.col_name)
+            .filter((col) => col !== 'student_id' && col !== 'id');
+          setColumns(attendanceColumns);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchStudents();
+    fetchStudentsAndColumns();
   }, [course]);
-
-  const handleDateChange = (e) => {
-    setAttendanceDate(e.target.value);
-  };
 
   const handleInputChange = (studentId, date, value) => {
     setAttendanceData((prevData) => ({
@@ -40,30 +56,51 @@ const Attendance = () => {
     }));
   };
 
+  const handleKeyDown = (e, studentId, date) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const currentIndex = students.findIndex(
+        (student) => student.student_id === studentId
+      );
+      const nextStudent = students[currentIndex + 1];
+      if (nextStudent) {
+        const nextInput = document.querySelector(
+          `input[data-student-id="${nextStudent.student_id}"][data-date="${date}"]`
+        );
+        if (nextInput) {
+          nextInput.focus();
+        }
+      }
+    }
+  };
+
   const handleAddColumn = async () => {
     if (!attendanceDate) {
       alert('Please select a date.');
       return;
     }
 
-    // Format the date to a valid column name
     const formattedDate = attendanceDate.replace(/-/g, '_');
 
-    // Add the new column if it doesn't already exist
-    if (!columnExists) {
-      const { data, error } = await supabase.rpc('add_attendance_column', {
-        course_table: course,
-        column_name: formattedDate,
-        data_type: 'BOOLEAN',
-      });
+    if (!columns.includes(formattedDate)) {
+      try {
+        const { error } = await supabase.rpc('add_attendance_column', {
+          course_table: `${course}`,
+          column_name: formattedDate,
+          data_type: 'BOOLEAN',
+        });
 
-      if (error) {
-        console.error('Error adding attendance column:', error);
-      } else {
-        setColumnExists(true);
-        setColumns((prevColumns) => [...prevColumns, formattedDate]);
-        console.log('Attendance column added:', data);
+        if (error) {
+          console.error('Error adding attendance column:', error);
+          alert('Error adding column: ' + error.message);
+        } else {
+          setColumns((prevColumns) => [...prevColumns, formattedDate]);
+        }
+      } catch (error) {
+        console.error('Error adding column:', error);
       }
+    } else {
+      alert('Column for this date already exists.');
     }
   };
 
@@ -77,25 +114,22 @@ const Attendance = () => {
 
     const formattedDate = attendanceDate.replace(/-/g, '_');
 
-    // Insert or update attendance data for each student
     for (const student of students) {
-      const present = attendanceData[student.student_id]
-        ? attendanceData[student.student_id][formattedDate]
-        : 0;
+      const present = attendanceData[student.student_id]?.[formattedDate] ?? 1;
 
-      const { data, error } = await supabase
-        .from(course + '_attendance')
-        .upsert([
+      try {
+        const { error } = await supabase.from(`${course}_attendance`).upsert([
           {
             student_id: student.student_id,
             [formattedDate]: present ? 1 : 0,
           },
         ]);
 
-      if (error) {
-        console.error('Error inserting attendance data:', error);
-      } else {
-        console.log('Attendance data inserted:', data);
+        if (error) {
+          console.error('Error inserting attendance data:', error);
+        }
+      } catch (error) {
+        console.error('Error submitting attendance:', error);
       }
     }
 
@@ -119,7 +153,7 @@ const Attendance = () => {
                 type="date"
                 id="attendanceDate"
                 value={attendanceDate}
-                onChange={handleDateChange}
+                onChange={(e) => setAttendanceDate(e.target.value)}
                 className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
               />
               <button
@@ -141,15 +175,6 @@ const Attendance = () => {
                     {col}
                   </th>
                 ))}
-                {/* <th className="border-b px-4 py-2 text-left">
-                  <button
-                    type="button"
-                    onClick={handleAddColumn}
-                    className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600"
-                  >
-                    +
-                  </button>
-                </th> */}
               </tr>
             </thead>
             <tbody>
@@ -170,7 +195,13 @@ const Attendance = () => {
                             e.target.value
                           )
                         }
+                        onKeyDown={(e) =>
+                          handleKeyDown(e, student.student_id, col)
+                        }
+                        data-student-id={student.student_id}
+                        data-date={col}
                         className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="0 or 1"
                       />
                     </td>
                   ))}
