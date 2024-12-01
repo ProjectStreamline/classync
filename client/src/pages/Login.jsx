@@ -2,8 +2,6 @@ import { useContext, useState } from 'react';
 import { AuthContext } from '../context/Authcontext';
 
 const Login = () => {
-
-
   const { setEmail, setIsAuthenticated } = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -16,8 +14,6 @@ const Login = () => {
     const studentEmailPattern =
       /^bt21ece(0[0-9]{2}|1[01][0-9]|130)@iiitn\.ac\.in$/;
     const isStudentEmail = studentEmailPattern.test(username);
-
-    console.log(`Username: ${username}, Is Student Email: ${isStudentEmail}`); // Debugging line
 
     if (isStudentEmail && password === '1') {
       setEmail(username);
@@ -41,62 +37,66 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-screen items-center justify-center text-gray-600 bg-gray-50">
-      <div className="relative">
-        <div className="relative flex flex-col sm:w-[30rem] rounded-lg border-gray-400 bg-white shadow-lg px-4">
-          <div className="flex-auto p-6">
-            <h4 className="mb-2 font-medium text-gray-700 xl:text-xl">
-              Welcome!
-            </h4>
-            <p className="mb-6 text-gray-500">
-              Please sign-in to access your account
-            </p>
-            <form className="mb-4" onSubmit={handleLogin}>
-              <div className="mb-4">
-                <label
-                  htmlFor="username"
-                  className="mb-2 inline-block text-xs font-medium uppercase text-gray-700"
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  className="block w-full cursor-text appearance-none rounded-md border border-gray-400 bg--100 py-2 px-3 text-sm outline-none focus:border-black focus:bg-white focus:text-gray-600 focus:shadow"
-                  id="username"
-                  placeholder="Enter your username"
-                  autoFocus
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="mb-2 inline-block text-xs font-medium uppercase text-gray-700"
-                  htmlFor="password"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  className="block w-full cursor-text appearance-none rounded-md border border-gray-400 bg--100 py-2 px-3 text-sm outline-none focus:border-black focus:bg-white focus:text-gray-600 focus:shadow"
-                  placeholder="············"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {errorMessage && (
-                <p className="text-red-500 text-sm">{errorMessage}</p>
-              )}
-              <div className="mb-4">
-                <button
-                  className="grid w-full cursor-pointer select-none rounded-md border border-black bg-black py-2 px-5 text-center align-middle text-sm text-white shadow hover:border-indigo-600 hover:bg-indigo-600 hover:text-white focus:border-indigo-600 focus:bg-indigo-600 focus:text-white focus:shadow-none"
-                  type="submit"
-                >
-                  Sign in
-                </button>
-              </div>
-            </form>
-          </div>
+    <div className="flex min-h-screen items-center justify-center bg-gray-900 text-gray-300">
+      <div className="w-full max-w-md px-6 py-10 bg-gray-800 rounded-3xl shadow-2xl">
+        <div className="text-center mb-8">
+          <h4 className="text-2xl font-bold text-gray-100 mb-2">
+            Welcome Back!
+          </h4>
+          <p className="text-gray-400 text-sm">
+            Sign in to access your dashboard
+          </p>
         </div>
+        <form onSubmit={handleLogin}>
+          <div className="mb-6">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Enter your email"
+              className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="••••••••"
+              className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          {errorMessage && (
+            <p className="text-sm text-red-500 mb-4">{errorMessage}</p>
+          )}
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg hover:opacity-90 transform hover:-translate-y-1 transition-all duration-300"
+          >
+            Sign In
+          </button>
+        </form>
+        <p className="text-center text-sm text-gray-400 mt-6">
+          Don’t have an account?{' '}
+          <a
+            href="/signup"
+            className="text-blue-400 hover:underline font-medium"
+          >
+            Sign up
+          </a>
+        </p>
       </div>
     </div>
   );
