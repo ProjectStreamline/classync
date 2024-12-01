@@ -41,13 +41,11 @@ exports.getNoticesForStudent = async (req, res) => {
     let notices;
 
     if (studentId === "all") {
-      // Fetch all notices relevant to the specified batch and branch
       notices = await Notice.find({
         batch,
         branch,
       });
     } else {
-      // Fetch notices for the specified studentId and also include "all"
       notices = await Notice.find({
         batch,
         branch,

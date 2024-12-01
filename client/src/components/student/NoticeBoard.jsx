@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/Authcontext";
 import axios from "axios";
+import Cosmic3DNotice from "../../components/student/Cosmic3DNotice";
 
 const NoticeBoard = () => {
   const { email } = useContext(AuthContext);
   const [notices, setNotices] = useState([]);
-  const studentId = email.split("@")[0];
-  const batch = studentId.substring(0, 4);
-  const branch = studentId.substring(4, 7);
+  const studentId = email ? email.split("@")[0] : "";
+  const batch = studentId ? studentId.substring(0, 4) : "";
+  const branch = studentId ? studentId.substring(4, 7) : "";
 
   useEffect(() => {
     const fetchNotices = async () => {
@@ -36,23 +37,23 @@ const NoticeBoard = () => {
   }, [batch, branch, studentId]);
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-4">NOTICE!</h2>
+    <div className="p-8 bg-space-300 bg-opacity-80 rounded-lg shadow-lg backdrop-blur-md">
+      <h2 className="text-3xl font-bold mb-6 text-starlight font-space">
+        NOTICE BOARD
+      </h2>
       {notices.length > 0 ? (
-        notices.map((notice) => (
-          <div
+        notices.map((notice, index) => (
+          <Cosmic3DNotice
             key={notice._id}
-            className="bg-yellow-100 p-4 mb-4 rounded-md shadow"
-          >
-            <p className="text-lg font-semibold">{notice.notice}</p>
-            <p className="text-sm text-gray-600">
-              Date: {new Date(notice.date).toLocaleDateString()}
-            </p>
-          </div>
+            notice={notice.notice}
+            date={new Date(notice.date).toLocaleDateString()}
+            delay={index * 100}
+          />
         ))
       ) : (
-        <p>No notices available.</p>
+        <p className="text-starlight">No notices available.</p>
       )}
+      <div className="mt-8"></div>
     </div>
   );
 };
