@@ -12,58 +12,45 @@ const Attendance = () => {
   useEffect(() => {
     const fetchStudentsAndColumns = async () => {
       try {
-        // Fetch students
-        const { data: studentData, error: studentError } = await supabase
-          .from(`${course}_attendance`)
-          .select('student_id');
-
-        if (studentError) {
-          console.error('Error fetching students:', studentError);
-        } else {
-          setStudents(studentData);
-        }
-
         // Fetch columns
         const { data: columnData, error: columnError } = await supabase.rpc(
           'get_columns',
           { p_table_name: `${course}_attendance` }
         );
-
+        console.log('Columns data:', columnData);
         if (columnError) {
           console.error('Error fetching columns:', columnError);
-        } else {
-          const attendanceColumns = columnData
-            .map((col) => col.col_name)
-            .filter((col) => col !== 'student_id' && col !== 'id');
-          setColumns(attendanceColumns);
         }
+        const attendanceColumns = columnData
+          .map((col) => col.col_name)
+          .filter((col) => col !== 'student_id' && col !== 'id');
+        console.log('Filtered attendance columns:', attendanceColumns);
+        setColumns(attendanceColumns);
 
-        // Fetch attendance data for each student
-        const { data: rawAttendanceData, error: attendanceError } = await supabase
+        // Fetch students
+        const { data: attendanceData, error: attendanceError } = await supabase
           .from(`${course}_attendance`)
           .select('*');
-
+        console.log('Attendance data:', attendanceData);
         if (attendanceError) {
-          console.error('Error fetching attendance data:', attendanceError);
-        } else {
-          const formattedAttendance = rawAttendanceData.reduce((acc, row) => {
-            const { student_id, ...dates } = row;
-
-            // Convert boolean or null values to strings or empty strings
-            const sanitizedDates = Object.entries(dates).reduce(
-              (dateAcc, [key, value]) => {
-                dateAcc[key] = value === true ? '1' : value === false ? '0' : '';
-                return dateAcc;
-              },
-              {}
-            );
-
-            acc[student_id] = sanitizedDates;
-            return acc;
-          }, {});
-
-          setAttendanceData(formattedAttendance);
+          console.error('Error fetching students:', studentError);
         }
+        const studentList = attendanceData.map((row) => ({
+          student_id: row.student_id,
+        }));
+        setStudents(studentList);
+
+        // Initialize attendance state for each student and evaluation column
+        const stuData = {};
+        attendanceData.forEach((row) => {
+          stuData[row.student_id] = {}; // Initialize an empty object for each student
+          attendanceColumns.forEach((date) => {
+            // Map the columns (dates) to the corresponding row values
+            stuData[row.student_id][date] = row[date] !== null ? row[date] : '';
+          });
+        });
+        console.log('Initialized attendanceData:', stuData);
+        setAttendanceData(stuData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -73,11 +60,12 @@ const Attendance = () => {
   }, [course]);
 
   const handleInputChange = (studentId, date, value) => {
+    setAttendanceDate(date);
     setAttendanceData((prevData) => ({
       ...prevData,
       [studentId]: {
         ...prevData[studentId],
-        [date]: value === '1' ? '1' : '0',
+        [date]: value,
       },
     }));
   };
@@ -113,7 +101,7 @@ const Attendance = () => {
         const { error } = await supabase.rpc('add_attendance_column', {
           course_table: `${course}`,
           column_name: formattedDate,
-          data_type: 'BOOLEAN',
+          data_type: 'INT',
         });
 
         if (error) {
@@ -191,32 +179,31 @@ const Attendance = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Mark Attendance</h1>
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="attendanceDate"
-              className="block text-sm font-medium text-gray-700 mb-1"
+        <div className="mb-4">
+          <label
+            htmlFor="attendanceDate"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Add column (select the date)
+          </label>
+          <div className="flex">
+            <input
+              type="date"
+              id="attendanceDate"
+              value={attendanceDate}
+              onChange={(e) => setAttendanceDate(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
+            />
+            <button
+              type="button"
+              onClick={handleAddColumn}
+              className="bg-green-500 text-white p-4 rounded-md hover:bg-green-600"
             >
-              Add column (select the date)
-            </label>
-            <div className="flex">
-              <input
-                type="date"
-                id="attendanceDate"
-                value={attendanceDate}
-                onChange={(e) => setAttendanceDate(e.target.value)}
-                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
-              />
-              <button
-                type="button"
-                onClick={handleAddColumn}
-                className="bg-green-500 text-white p-4 rounded-md hover:bg-green-600"
-              >
-                +
-              </button>
-            </div>
+              +
+            </button>
           </div>
-
+        </div>
+        <form onSubmit={handleSubmit}>
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr>
@@ -235,10 +222,11 @@ const Attendance = () => {
                   {columns.map((col) => (
                     <td key={col} className="border-b px-4 py-2">
                       <input
+                        id={`input-${student.student_id}-${col}`}
                         type="number"
                         min="0"
                         max="1"
-                        value={attendanceData[student.student_id]?.[col] || ''}
+                        value={attendanceData[student.student_id]?.[col]}
                         onChange={(e) =>
                           handleInputChange(
                             student.student_id,
@@ -249,10 +237,10 @@ const Attendance = () => {
                         onKeyDown={(e) =>
                           handleKeyDown(e, student.student_id, col)
                         }
-                        data-student-id={student.student_id}
-                        data-date={col}
+                        // data-student-id={student.student_id}
+                        // data-date={col}
                         className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="0 or 1"
+                        placeholder="0/1"
                       />
                     </td>
                   ))}
