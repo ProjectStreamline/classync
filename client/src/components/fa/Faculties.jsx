@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import  { useState, useContext, useEffect } from 'react';
 import { CourseContext } from '../../context/CourseContext';
 import FacultyCard from './FacultyCard';
 import supabase from '../../config/supabaseClient';

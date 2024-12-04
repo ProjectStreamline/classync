@@ -17,7 +17,7 @@ const FaNavbar = () => {
     }, 0);
   };
 
-  const openNoticeModal = () => setIsNoticeModalOpen(true);
+
   const closeNoticeModal = () => setIsNoticeModalOpen(false);
 
   return (

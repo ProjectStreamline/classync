@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import {  useContext, useEffect } from 'react';
 import CourseCard from './CourseCard';
 import CreateNewCourse from './CreateNewCourse';
 import { FormContext } from '../../context/FormContext';
@@ -17,6 +17,7 @@ const Courses = () => {
           type="text"
           placeholder="Search for a course"
           className="flex-1 p-2 rounded-xl border w-full"
+    
         />
       </div>
       <div className="flex-1 items-center w-auto h-[400px] overflow-auto no-scrollbar">
