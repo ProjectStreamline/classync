@@ -170,39 +170,45 @@ const EnterMarks = () => {
 
     let total = 0;
     Object.values(studentMarks).forEach((mark) => {
-      total += parseFloat(mark) || 0; // Handle empty or non-numeric values gracefully
+      total += parseFloat(mark) ||
+        0; // Handle empty or non-numeric values gracefully
     });
     return total;
   };
 
-  const calculateGrade = (student_id, totalMarks, cutoffs) => {
-    if (!cutoffs) return;
+ const calculateGrade = (student_id, totalMarks, cutoffs) => {
+    if (!cutoffs) {
+        console.error('Cutoffs are undefined or null');
+        return 'FF';
+    }
+
+    const numericTotalMarks = Number(totalMarks);
+    if (isNaN(numericTotalMarks)) {
+        console.error(`Total marks for student ${student_id} is not a number:`, totalMarks);
+        return 'FF';
+    }
 
     let grade;
 
-    // Calculate grade based on totalMarks and cutoff values
-    if (totalMarks >= cutoffs.AA) {
-      grade = 'AA';
-    } else if (totalMarks >= cutoffs.AB && totalMarks < cutoffs.AA) {
-      grade = 'AB';
-    } else if (totalMarks >= cutoffs.BB && totalMarks < cutoffs.AB) {
-      grade = 'BB';
-    } else if (totalMarks >= cutoffs.BC && totalMarks < cutoffs.BB) {
-      grade = 'BC';
-    } else if (totalMarks >= cutoffs.CD && totalMarks < cutoffs.BC) {
-      grade = 'CD';
-    } else if (totalMarks >= cutoffs.DD && totalMarks < cutoffs.CD) {
-      grade = 'DD';
+    if (numericTotalMarks >= cutoffs.AA) {
+        grade = 'AA';
+    } else if (numericTotalMarks >= cutoffs.AB) {
+        grade = 'AB';
+    } else if (numericTotalMarks >= cutoffs.BB) {
+        grade = 'BB';
+    } else if (numericTotalMarks >= cutoffs.BC) {
+        grade = 'BC';
+    } else if (numericTotalMarks >= cutoffs.CD) {
+        grade = 'CD';
+    } else if (numericTotalMarks >= cutoffs.DD) {
+        grade = 'DD';
     } else {
-      grade = 'FF';
+        grade = 'FF';
     }
 
-    console.log(`
-      Student ${student_id} has total marks: ${totalMarks} and grade: ${grade}
-    `);
-
+    console.log(`Student ${student_id} has total marks: ${numericTotalMarks} and grade: ${grade}`);
     return grade;
-  };
+};
 
   const saveTotalMarks = async () => {
     try {
@@ -259,7 +265,7 @@ const EnterMarks = () => {
           console.log('Total marks saved successfully');
 
           // Reload the page after saving total marks
-          window.location.reload(); // This will refresh the page
+          // window.location.reload(); 
         } catch (error) {
           console.error('Error saving total marks:', error);
         }
@@ -283,18 +289,29 @@ const EnterMarks = () => {
           const updatedStudents = [...students]; // Create a copy of the students array
 
           for (const student of students) {
-            //fetch total marks
-            const { data: total_marks, error } = await supabase
-              .from(course)
-              .select('totals')
-              .eq('student_id', student.student_id)
-              .single();
+
+            const { data: totalMarksData, error } = await supabase
+  .from(course)
+  .select('totals')
+  .eq('student_id', student.student_id)
+  .single();
+
+if (error) throw error;
+
+
+const totalMarks = totalMarksData?.totals;
+
+if (totalMarks === undefined || totalMarks === null) {
+  console.error(`Total marks for student ${student.student_id} is not valid:`, totalMarksData);
+  continue; 
+}
+
 
             if (error) throw error;
 
             const grade = calculateGrade(
               student.student_id,
-              total_marks,
+              totalMarks,
               cutoffs
             );
 
@@ -318,7 +335,7 @@ const EnterMarks = () => {
 
           console.log('Grades saved successfully');
           // Reload the page after saving grades
-          window.location.reload();
+          // window.location.reload();
         } catch (error) {
           console.error('Error saving grades:', error);
         }
