@@ -7,7 +7,7 @@ const { theme, style } = buildTheme({
   themeColor: "#634433",
 });
 
-// Add your Client ID here ⬇️
+
 const clientId = "06dca768-4018-4888-b94a-e7c755000f9d";
 const config = {
   composerPlaceholder: "Start your query with CHECK FOR",

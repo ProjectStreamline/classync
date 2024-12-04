@@ -78,6 +78,12 @@ const RegistrationForm = () => {
         >
           Registered student data
         </Link>
+        <Link
+          className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4 text-center"
+          to="/fa/student-data-backlog"
+        >
+          Backlogs
+        </Link>
         <div className="bg-white p-4 rounded-xl">
           <h2 className="text-l font-bold mb-2">Quick Stats</h2>
           <div>
