@@ -2,21 +2,21 @@ import React from 'react';
 
 const FacultyCard = ({ faculty }) => {
   return (
-    <div className="bg-white shadow-md rounded-xl p-4 m-4 cursor-pointer flex flex-row justify-between w-auto hover:bg-gray-200 duration-300">
+    <div className="bg-gray-50 shadow-md rounded-lg p-6 m-4 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center hover:shadow-lg hover:bg-gray-100 transition duration-300">
+      {/* Left Section */}
       <div>
-        <div className="font-bold text-xl mb-3">
-          <h3>{faculty.faculty_name}</h3>
-        </div>
-        <div className="text-sm text-gray-500">
-          <p>{faculty.position}</p>
-        </div>
+        <h3 className="font-semibold text-lg text-gray-800">{faculty.faculty_name}</h3>
+        <p className="text-sm text-gray-500 mt-2">{faculty.position || 'Position not specified'}</p>
       </div>
-      <div className="flex flex-col justify-between mx-145 items-end">
-        <div className="text-sm mb-4 mt-1 text-lime-900 font-bold">
-          {faculty.department}
-        </div>
+
+      {/* Right Section */}
+      <div className="mt-4 sm:mt-0 sm:text-right">
+        <span className="inline-block px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded-md shadow-sm">
+          {faculty.department || 'No department'}
+        </span>
       </div>
     </div>
   );
 };
+
 export default FacultyCard;

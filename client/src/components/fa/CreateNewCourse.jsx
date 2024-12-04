@@ -34,7 +34,6 @@ const CreateNewCourse = () => {
       return;
     }
 
-    // Insert new course data
     const { data, error } = await supabase.from('courses').insert([
       {
         course_code: courseCode,
@@ -49,7 +48,6 @@ const CreateNewCourse = () => {
       return;
     }
 
-    // Call the custom SQL function to create a new table for this course
     const { error: tableError } = await supabase.rpc('create_course_table', {
       course_name: courseName,
     });
@@ -60,7 +58,6 @@ const CreateNewCourse = () => {
       console.log('Course created successfully and table initialized');
     }
 
-    //call the sql function to create a new table for attendance
     const { error: attendanceTableError } = await supabase.rpc(
       'create_attendance_table',
       { course_name: courseName }
@@ -70,105 +67,118 @@ const CreateNewCourse = () => {
     } else {
       console.log('Attendance table created successfully');
     }
+
+    setOpenCourse(false);
   };
 
   return (
-    <div className="rounded-xl p-4 m-4 cursor-pointer">
+    <div className="rounded-xl p-4 m-4">
+      {/* Button to open modal */}
       <button
-        className="text-white font-bold w-full bg-black h-12 rounded-lg"
+        className="text-white font-bold w-full bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 h-12 rounded-lg transition duration-300"
         onClick={() => setOpenCourse(true)}
       >
-        Create new Course
+        Create New Course
       </button>
-      <div
-        className={`fixed flex justify-center items-center w-full h-full p-5 top-0 left-0 ${
-          openCourse ? 'block bg-black/30' : 'hidden'
-        }`}
-      >
-        <form
-          className="bg-card-bg w-fit h-fit rounded-lg p-5"
-          onSubmit={handleSubmit}
-        >
-          <div className="relative mb-4">
+
+      {/* Modal */}
+      {openCourse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg">
+            {/* Close button */}
             <button
-              className="text-navbar-text w-7 h-7 bg-navbar-bg rounded-full absolute right-0 top-0 flex items-center justify-center text-white"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
               onClick={() => setOpenCourse(false)}
             >
-              <ImCross />
+              <ImCross className="w-5 h-5" />
             </button>
-            <h1 className="text-2xl font-bold text-card-text">
+
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
               Create New Course
-            </h1>
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Course Code */}
+              <div>
+                <label
+                  htmlFor="courseCode"
+                  className="block text-sm font-semibold text-gray-700"
+                >
+                  Course Code
+                </label>
+                <input
+                  type="text"
+                  id="courseCode"
+                  placeholder="Enter Course Code"
+                  value={courseCode}
+                  onChange={(e) => setCourseCode(e.target.value)}
+                  className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Course Name */}
+              <div>
+                <label
+                  htmlFor="courseName"
+                  className="block text-sm font-semibold text-gray-700"
+                >
+                  Course Name
+                </label>
+                <input
+                  type="text"
+                  id="courseName"
+                  placeholder="Enter Course Name"
+                  value={courseName}
+                  onChange={(e) => setCourseName(e.target.value)}
+                  className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Faculty */}
+              <div>
+                <label
+                  htmlFor="faculty"
+                  className="block text-sm font-semibold text-gray-700"
+                >
+                  Faculty
+                </label>
+                <Select
+                  defaultValue={faculty}
+                  options={facultyData}
+                  onChange={setFaculty}
+                  className="mt-1"
+                  classNamePrefix="select"
+                />
+              </div>
+
+              {/* Lab */}
+              <div>
+                <label
+                  htmlFor="lab"
+                  className="block text-sm font-semibold text-gray-700"
+                >
+                  Lab
+                </label>
+                <Select
+                  defaultValue={lab}
+                  options={labOptions}
+                  onChange={setLab}
+                  className="mt-1"
+                  classNamePrefix="select"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-lg transition duration-300"
+              >
+                Create Course
+              </button>
+            </form>
           </div>
-          {/* course code */}
-          <div className="flex flex-col gap-2">
-            <label
-              htmlFor="courseCode"
-              className="text-lg font-bold text-card-text"
-            >
-              Course Code
-            </label>
-            <input
-              type="text"
-              placeholder="Enter Course Code"
-              className="border border-gray-300 rounded-md p-2"
-              value={courseCode}
-              onChange={(e) => setCourseCode(e.target.value)}
-            />
-          </div>
-          {/* course name */}
-          <div className="flex flex-col gap-2">
-            <label
-              htmlFor="courseName"
-              className="text-lg font-bold text-card-text"
-            >
-              Course Name
-            </label>
-            <input
-              type="text"
-              placeholder="Enter Course Name"
-              className="border border-gray-300 rounded-md p-2"
-              value={courseName}
-              onChange={(e) => setCourseName(e.target.value)}
-            />
-          </div>
-          {/* faculty */}
-          <div className="flex flex-col gap-2">
-            <label
-              htmlFor="faculty"
-              className="text-lg font-bold text-card-text"
-            >
-              Faculty
-            </label>
-            <Select
-              defaultValue={faculty}
-              options={facultyData}
-              onChange={setFaculty}
-              classNamePrefix="select"
-              className="h-10 min-w-96"
-            />
-          </div>
-          {/* lab */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="lab" className="text-lg font-bold text-card-text">
-              Lab
-            </label>
-            <Select
-              defaultValue={lab}
-              options={labOptions}
-              onChange={setLab}
-              classNamePrefix="select"
-              className="h-10 min-w-96"
-            />
-          </div>
-          <button
-            className="text-navbar-text font-bold w-full bg-navbar-bg h-12 rounded-lg mt-3 text-white"
-            type="submit"
-          >
-            Create Course
-          </button>
-        </form>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

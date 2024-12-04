@@ -21,11 +21,11 @@ const FaNavbar = () => {
   const closeNoticeModal = () => setIsNoticeModalOpen(false);
 
   return (
-    <div className="bg-black text-white flex flex-col items-center m-8 p-4 rounded-xl sticky min-h-screen w-[18%]">
-      {/* Name */}
-      <div className="flex flex-col items-center mb-8">
-        <div className="text-lg font-semibold text-heading">Dr. Nikhil</div>
-        <div className="text-sm text-text">FA</div>
+    <div className="bg-gray-900 text-white m-8 flex flex-col items-center p-6 rounded-xl sticky top-0 min-h-screen w-[18%]  shadow-lg">
+      {/* User Information */}
+      <div className="flex flex-col items-center mb-8 text-center">
+        <div className="text-xl font-semibold text-gray-100">Dr. Nikhil</div>
+        <div className="text-sm text-gray-400">Faculty Advisor</div>
       </div>
 
       {/* Logo */}
@@ -33,42 +33,46 @@ const FaNavbar = () => {
         <img
           src={iiitnLogo}
           className="object-contain h-24 w-24"
-          alt="iiitn logo"
+          alt="IIITN Logo"
         />
       </div>
 
-      {/* Nav Links */}
-      <div className="flex flex-col items-center mb-8">
+      {/* Navigation Links */}
+      <div className="flex flex-col items-center mb-8 w-full">
         <Link
           to={"/fa/dashboard"}
-          className="w-full mb-3 hover:bg-gray-100 hover:text-black rounded-xl px-5 py-2 transition-all duration-500 hover:animate-pulse text-center"
+          className="w-full mb-3 text-center text-lg font-medium bg-gray-800 hover:bg-gray-700 hover:text-white rounded-lg px-4 py-3 transition-all duration-300"
         >
           Dashboard
         </Link>
         <Link
           to={"/fa/registration"}
-          className="w-full mb-3 hover:bg-gray-100 hover:text-black rounded-xl px-5 py-2 transition-all duration-500 hover:animate-pulse text-center"
+          className="w-full mb-3 text-center text-lg font-medium bg-gray-800 hover:bg-gray-700 hover:text-white rounded-lg px-4 py-3 transition-all duration-300"
         >
           Registration
         </Link>
         <Link
           to={"/fa/generatenotice"}
-          className="w-full mb-3 hover:bg-gray-100 hover:text-black rounded-xl px-5 py-2 transition-all duration-500 hover:animate-pulse text-center"
+          className="w-full mb-3 text-center text-lg font-medium bg-gray-800 hover:bg-gray-700 hover:text-white rounded-lg px-4 py-3 transition-all duration-300"
         >
           Generate Notice
         </Link>
       </div>
 
-      {/* Logout */}
-      <div className="mt-auto mb-8">
-        <div
-          className="bg-white text-black rounded-full w-32 h-12 flex items-center justify-center hover:text-black hover:bg-blue-500 duration-500"
+      {/* Logout Button */}
+      <div className="mt-auto mb-6">
+        <button
+          className="bg-red-600 text-white font-bold rounded-full w-36 h-12 flex items-center justify-center hover:bg-red-700 transition-all duration-300"
           onClick={handleLogout}
         >
           Logout
-        </div>
+        </button>
       </div>
-      <div className="text-center text-sm mb-auto">&copy; 2024 IIITN ERP</div>
+
+      {/* Footer */}
+      <div className="text-center text-gray-400 text-sm mt-auto">
+        &copy; 2024 IIITN ERP
+      </div>
 
       {/* Notice Modal */}
       {isNoticeModalOpen && <NoticeModal onClose={closeNoticeModal} />}

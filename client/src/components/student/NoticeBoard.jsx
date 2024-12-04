@@ -14,7 +14,7 @@ const NoticeBoard = () => {
     const fetchNotices = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/notices/student",
+          "http://localhost:5002/api/notices/student",
           {
             params: { batch, branch, studentId },
           }

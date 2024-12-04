@@ -8,9 +8,7 @@ const RegistrationForm = () => {
   const { isFloated, toggleIsFloated, slots } = useContext(FormContext);
   const [selectedCourses, setSelectedCourses] = useState({});
 
-  // Collect selected courses for each slot
   const handleCourseSelection = (slotId, courses) => {
-    console.log(`Selected courses for slot ${slotId}:`, courses); // Debugging line
     setSelectedCourses((prevCourses) => ({
       ...prevCourses,
       [slotId]: courses,
@@ -18,16 +16,11 @@ const RegistrationForm = () => {
   };
 
   const handleCreateForm = async () => {
-    console.log('Starting form creation...'); // Debugging line
-    console.log('Selected courses:', selectedCourses); // Debugging line
-
     for (const slotId in selectedCourses) {
-      const tableName = `slot_${slotId}`; // Table name like slot_A, slot_B, etc.
+      const tableName = `slot_${slotId}`;
       const courseEntries = selectedCourses[slotId].map((course) => ({
         course_name: course.label,
       }));
-
-      console.log(`Inserting into table ${tableName}:`, courseEntries); // Debugging line
 
       try {
         const { data, error } = await supabase
@@ -35,21 +28,22 @@ const RegistrationForm = () => {
           .insert(courseEntries);
 
         if (error) {
-          console.error(`Error inserting into ${tableName}:`, error.message); // Debugging line
-        } else {
-          console.log(`Inserted data into ${tableName}:`, data); // Debugging line
+          console.error(`Error inserting into ${tableName}:`, error.message);
         }
       } catch (error) {
-        console.error(`Failed to create form in table ${tableName}`, error); // Debugging line
+        console.error(`Failed to create form in table ${tableName}`, error);
       }
     }
   };
 
   return (
-    <div className="w-full flex flex-row justify-between sticky min-h-screen m-4 ml-0">
-      <div className="flex flex-col bg-card-bg rounded-xl p-4 min-w-[46%] m-4">
-        <h2 className="text-2xl font-bold m-4 ml-0">Registration Form</h2>
-        <div className="">
+    <div className="w-full flex flex-col md:flex-row justify-between items-start gap-6 min-h-screen p-6 bg-gray-50">
+      {/* Left Section: Form */}
+      <div className="flex flex-col w-full md:w-[48%] bg-white shadow-md rounded-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-700 mb-6">
+          Registration Form
+        </h2>
+        <div className="space-y-4">
           {slots.map((slot) => (
             <MultiSelect
               key={slot.id}
@@ -59,40 +53,56 @@ const RegistrationForm = () => {
           ))}
         </div>
       </div>
-      <div className="flex flex-col bg-card-bg rounded-xl min-w-[46%] m-4 p-6">
-        <button
-          className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4"
-          onClick={handleCreateForm}
-        >
-          Create Form
-        </button>
-        <button
-          className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4"
-          onClick={toggleIsFloated}
-        >
-          {isFloated ? 'Stop Registration' : 'Start Registration'}
-        </button>
-        <Link
-          className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4 text-center"
-          to="/fa/student-data"
-        >
-          Registered student data
-        </Link>
-        <Link
-          className="text-l font-bold text-white bg-black rounded-lg p-4 mb-4 text-center"
-          to="/fa/student-data-backlog"
-        >
-          Backlogs
-        </Link>
-        <div className="bg-white p-4 rounded-xl">
-          <h2 className="text-l font-bold mb-2">Quick Stats</h2>
-          <div>
-            <p>Semester: 7th</p>
-            <p>Branch: ECE</p>
-            <p>Active Courses for this semester: 10</p>
-            <p>Total Registered Students: 100</p>
-            <p>Remaining Students: 30</p>
-          </div>
+
+      {/* Right Section: Actions & Stats */}
+      <div className="flex flex-col w-full md:w-[48%] bg-white shadow-md rounded-lg p-6">
+        <div className="space-y-4 mb-6">
+          <button
+            className="w-full bg-blue-600 text-white font-semibold rounded-lg py-3 hover:bg-blue-700 transition-all"
+            onClick={handleCreateForm}
+          >
+            Create Form
+          </button>
+          <button
+            className="w-full bg-red-600 text-white font-semibold rounded-lg py-3 hover:bg-red-700 transition-all"
+            onClick={toggleIsFloated}
+          >
+            {isFloated ? 'Stop Registration' : 'Start Registration'}
+          </button>
+          <Link
+            to="/fa/student-data"
+            className="w-full bg-green-600 text-white text-center font-semibold rounded-lg py-3 hover:bg-green-700 transition-all"
+          >
+            Registered Student Data
+          </Link>
+          <Link
+            to="/fa/student-data-backlog"
+            className="w-full bg-orange-600 text-white text-center font-semibold rounded-lg py-3 hover:bg-orange-700 transition-all"
+          >
+            Backlogs
+          </Link>
+        </div>
+
+        {/* Quick Stats Section */}
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h2 className="text-xl font-bold text-gray-700 mb-4">Quick Stats</h2>
+          <ul className="space-y-2 text-gray-600">
+            <li>
+              <strong>Semester:</strong> 7th
+            </li>
+            <li>
+              <strong>Branch:</strong> ECE
+            </li>
+            <li>
+              <strong>Active Courses:</strong> 10
+            </li>
+            <li>
+              <strong>Total Registered Students:</strong> 100
+            </li>
+            <li>
+              <strong>Remaining Students:</strong> 30
+            </li>
+          </ul>
         </div>
       </div>
     </div>

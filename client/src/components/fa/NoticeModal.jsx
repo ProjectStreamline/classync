@@ -39,7 +39,7 @@ const Modal = ({ onClose }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/notices",
+        "http://localhost:5002/api/notices",
         payload
       );
 
