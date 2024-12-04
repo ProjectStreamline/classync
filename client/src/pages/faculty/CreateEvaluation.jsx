@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../../config/supabaseClient';
 import EnterMarks from '../../components/faculty/EnterMarks';
@@ -45,6 +45,8 @@ const CreateEvaluation = () => {
         setEvalName('');
         setMaxMarks(0);
       }
+      // Reload the page to reflect the updated data
+      window.location.reload();
     } catch (error) {
       console.error('Unexpected error:', error);
     }
@@ -52,9 +54,13 @@ const CreateEvaluation = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Create Evaluation</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+        Create Evaluation
+      </h1>
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-        <p className="text-lg font-semibold text-gray-700 mb-4">Add Evaluation</p>
+        <p className="text-lg font-semibold text-gray-700 mb-4">
+          Add Evaluation
+        </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label

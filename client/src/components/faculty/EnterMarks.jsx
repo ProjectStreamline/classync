@@ -23,7 +23,12 @@ const EnterMarks = () => {
         const evalColumns = columnData
           .map((col) => col.col_name)
           .filter((col) => col !== 'student_id' && col !== 'id');
-        setEvaluations(evalColumns);
+
+        //filter totals and move to the end
+        const sortedEvalColumns = evalColumns.includes('totals')
+          ? [...evalColumns.filter((col) => col !== 'totals'), 'totals']
+          : evalColumns;
+        setEvaluations(sortedEvalColumns);
 
         // Fetch students and their marks
         let { data: courseData, error: courseError } = await supabase
@@ -89,30 +94,38 @@ const EnterMarks = () => {
     }));
   };
 
-  const handleMarkSubmit = async (studentId, evalName) => {
-    const mark = marks[studentId]?.[evalName];
-    if (mark > maxMarks) {
-      alert('Marks cannot be greater than max marks');
-      return;
-    }
-    if (mark === undefined) return;
-
+  const handleMarkSubmit = async () => {
     try {
-      const { error } = await supabase
-        .from(course)
-        .update({ [evalName]: mark })
-        .match({ student_id: studentId });
+      const updates = Object.keys(marks).map((studentId) => {
+        const studentMarks = marks[studentId];
+        return {
+          student_id: studentId,
+          ...studentMarks,
+        };
+      });
 
-      if (error) throw error;
-      console.log('Mark submitted successfully');
+      for (const update of updates) {
+        const { student_id, ...evalMarks } = update;
+
+        const { error } = await supabase
+          .from(course)
+          .update(evalMarks)
+          .match({ student_id });
+
+        if (error) throw error;
+      }
+
+      console.log('All marks submitted successfully');
+      // Reload the page to reflect the updated data
+      window.location.reload();
     } catch (error) {
-      console.error('Error submitting mark:', error);
+      console.error('Error submitting marks:', error);
     }
   };
 
   const handleEnterKey = (e, studentId, evalName, studentIndex) => {
     if (e.key === 'Enter') {
-      handleMarkSubmit(studentId, evalName);
+      e.preventDefault();
       const nextStudentIndex = studentIndex + 1;
 
       if (nextStudentIndex < students.length) {
@@ -269,12 +282,20 @@ const EnterMarks = () => {
           </tbody>
         </table>
       </div>
-      <button
-        onClick={saveTotalMarks}
-        className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-md"
-      >
-        Calculate Total Marks
-      </button>
+      <div className="flex w-full">
+        <button
+          onClick={handleMarkSubmit}
+          className="mt-4 mr-1 px-6 py-2 bg-blue-500 text-white rounded-md flex-1"
+        >
+          Submit Marks
+        </button>
+        <button
+          onClick={saveTotalMarks}
+          className="mt-4 ml-1 px-6 py-2 bg-blue-500 text-white rounded-md flex-1"
+        >
+          Calculate Total Marks
+        </button>
+      </div>
     </div>
   );
 };
