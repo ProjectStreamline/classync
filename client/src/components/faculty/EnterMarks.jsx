@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../../config/supabaseClient';
-
 const EnterMarks = () => {
   const { course } = useParams();
   const [students, setStudents] = useState([]);
@@ -10,6 +9,8 @@ const EnterMarks = () => {
   const [maxMarks, setMaxMarks] = useState(0);
   const [evalName, setEvalName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [cutoffs, setCutoffs] = useState({});
+  console.log(cutoffs);
 
   useEffect(() => {
     const CourseStudents = async () => {
@@ -83,6 +84,28 @@ const EnterMarks = () => {
     }
   }, [evalName]);
 
+  useEffect(() => {
+    const fetchCutoffs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('courses')
+          .select('AA, AB, BB, BC, CC, CD, DD, FF')
+          .eq('course_name', course)
+          .single();
+
+        if (error) {
+          console.error('Error fetching cutoffs:', error);
+        } else {
+          setCutoffs(data);
+        }
+      } catch (error) {
+        console.error('Error fetching cutoffs:', error);
+      }
+    };
+
+    fetchCutoffs();
+  }, [course, setCutoffs]);
+
   const handleMarkChange = (studentId, evalName, value) => {
     setEvalName(evalName);
     setMarks((prev) => ({
@@ -152,6 +175,35 @@ const EnterMarks = () => {
     return total;
   };
 
+  const calculateGrade = (student_id, totalMarks, cutoffs) => {
+    if (!cutoffs) return;
+
+    let grade;
+
+    // Calculate grade based on totalMarks and cutoff values
+    if (totalMarks >= cutoffs.AA) {
+      grade = 'AA';
+    } else if (totalMarks >= cutoffs.AB && totalMarks < cutoffs.AA) {
+      grade = 'AB';
+    } else if (totalMarks >= cutoffs.BB && totalMarks < cutoffs.AB) {
+      grade = 'BB';
+    } else if (totalMarks >= cutoffs.BC && totalMarks < cutoffs.BB) {
+      grade = 'BC';
+    } else if (totalMarks >= cutoffs.CD && totalMarks < cutoffs.BC) {
+      grade = 'CD';
+    } else if (totalMarks >= cutoffs.DD && totalMarks < cutoffs.CD) {
+      grade = 'DD';
+    } else {
+      grade = 'FF';
+    }
+
+    console.log(`
+      Student ${student_id} has total marks: ${totalMarks} and grade: ${grade}
+    `);
+
+    return grade;
+  };
+
   const saveTotalMarks = async () => {
     try {
       // Call the RPC to add the `totals` column if it doesn't exist
@@ -166,8 +218,6 @@ const EnterMarks = () => {
           const updatedStudents = [...students]; // Create a copy of the students array
 
           for (const student of students) {
-            const totalMarks = calculateTotalMarks(student.student_id);
-
             // Fetch the current total_marks from the database
             const { data, error } = await supabase
               .from(course)
@@ -176,7 +226,10 @@ const EnterMarks = () => {
               .single();
 
             if (error) throw error;
-
+            const totalMarks = calculateTotalMarks(
+              student.student_id,
+              totalMarks
+            );
             // Only update if the total marks have changed
             if (data && data.totals !== totalMarks) {
               // Update the total marks for the student in the table
@@ -214,6 +267,63 @@ const EnterMarks = () => {
     } catch (error) {
       console.error('Error adding total_marks column:', error);
     }
+  };
+
+  const saveGrades = async () => {
+    try {
+      //call rpc function
+      const { error: rpcError } = await supabase.rpc('add_grades_column', {
+        tab: course,
+      });
+      if (rpcError) throw rpcError;
+
+      //wait a bit for the column to be created
+      setTimeout(async () => {
+        try {
+          const updatedStudents = [...students]; // Create a copy of the students array
+
+          for (const student of students) {
+            //fetch total marks
+            const { data: total_marks, error } = await supabase
+              .from(course)
+              .select('totals')
+              .eq('student_id', student.student_id)
+              .single();
+
+            if (error) throw error;
+
+            const grade = calculateGrade(
+              student.student_id,
+              total_marks,
+              cutoffs
+            );
+
+            const { data, error: updateError } = await supabase
+              .from(course)
+              .update({ grades: grade })
+              .match({ student_id: student.student_id });
+            if (updateError) throw updateError;
+
+            const studentIndex = updatedStudents.findIndex(
+              (s) => s.student_id === student.student_id
+            );
+            if (studentIndex !== -1) {
+              updatedStudents[studentIndex] = {
+                ...updatedStudents[studentIndex],
+                grade: grade,
+              };
+            }
+          }
+          setStudents(updatedStudents); // This will trigger a re-render
+
+          console.log('Grades saved successfully');
+          // Reload the page after saving grades
+          window.location.reload();
+        } catch (error) {
+          console.error('Error saving grades:', error);
+        }
+      }, 1000);
+    } catch (error) {}
   };
 
   if (loading) {
@@ -294,6 +404,12 @@ const EnterMarks = () => {
           className="mt-4 ml-1 px-6 py-2 bg-blue-500 text-white rounded-md flex-1"
         >
           Calculate Total Marks
+        </button>
+        <button
+          onClick={saveGrades}
+          className="mt-4 ml-1 px-6 py-2 bg-blue-500 text-white rounded-md flex-1"
+        >
+          Calculate Grades
         </button>
       </div>
     </div>
