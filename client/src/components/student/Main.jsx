@@ -179,14 +179,13 @@ const Main = () => {
       <Nebula>
         <div className="relative z-10 w-full h-full p-8">
           <h2 className="text-5xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-nebula-pink via-nebula-purple to-nebula-blue mb-8 animate-float">
-            Your Cosmic Campus Adventure
+Upcoming Events
           </h2>
           <p
             className="text-xl text-center text-starlight mb-12 animate-float"
             style={{ animationDelay: "0.2s" }}
           >
-            Explore the universe of knowledge and opportunities. Click on
-            celestial objects to discover more!
+
           </p>
           <CosmicObject
             type="planet"

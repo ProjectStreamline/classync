@@ -173,10 +173,10 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 pt-24">
         <div className="text-center mb-12 animate-fade-in mt-4">
           <h1 className="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-nebula-pink via-nebula-purple to-nebula-blue">
-            Welcome to Your Cosmic Dashboard
+            Welcome to Your Dashboard
           </h1>
           <p className="text-xl text-gray-300">
-            Explore the universe of knowledge and opportunities
+
           </p>
         </div>
         <Main />

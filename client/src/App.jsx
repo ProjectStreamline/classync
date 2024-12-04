@@ -15,6 +15,7 @@ const FaDashboard = lazy(() => import('./pages/fa/FaDashboard'));
 import GenerateNotice from './pages/fa/GenerateNotice';
 import Bot from './pages/student/bot';
 import Attendance from './pages/faculty/Attendance';
+import Backlogs from './components/fa/backlogs';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/fa/registration" element={<Registration />} />
           <Route path="/fa/generatenotice" element={<GenerateNotice />} />
           <Route path="/fa/student-data" element={<StudentData />} />
+           <Route path="/fa/student-data-backlog" element={<Backlogs />} />
           <Route path="/fa/course/:id" element={<CourseDetails />} />
 
           {/* faculty routes */}
