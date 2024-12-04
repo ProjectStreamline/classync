@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../../config/supabaseClient';
 
@@ -139,74 +139,69 @@ const EnterMarks = () => {
     return total;
   };
 
+  const saveTotalMarks = async () => {
+    try {
+      // Call the RPC to add the `totals` column if it doesn't exist
+      const { error: rpcError } = await supabase.rpc('add_totals_column', {
+        tab: course,
+      });
+      if (rpcError) throw rpcError;
 
-const saveTotalMarks = async () => {
-  try {
-    // Call the RPC to add the `totals` column if it doesn't exist
-    const { error: rpcError } = await supabase.rpc('add_totals_column', {
-      tab: course,
-    });
-    if (rpcError) throw rpcError;
+      // Wait a bit for the column to be created before updating total marks
+      setTimeout(async () => {
+        try {
+          const updatedStudents = [...students]; // Create a copy of the students array
 
-    // Wait a bit for the column to be created before updating total marks
-    setTimeout(async () => {
-      try {
-        const updatedStudents = [...students]; // Create a copy of the students array
-        
-        for (const student of students) {
-          const totalMarks = calculateTotalMarks(student.student_id);
+          for (const student of students) {
+            const totalMarks = calculateTotalMarks(student.student_id);
 
-          // Fetch the current total_marks from the database
-          const { data, error } = await supabase
-            .from(course)
-            .select('totals')
-            .eq('student_id', student.student_id)
-            .single();
-
-          if (error) throw error;
-
-          // Only update if the total marks have changed
-          if (data && data.totals !== totalMarks) {
-            // Update the total marks for the student in the table
-            const { error: updateError } = await supabase
+            // Fetch the current total_marks from the database
+            const { data, error } = await supabase
               .from(course)
-              .update({ totals: totalMarks })
-              .match({ student_id: student.student_id });
+              .select('totals')
+              .eq('student_id', student.student_id)
+              .single();
 
-            if (updateError) throw updateError;
+            if (error) throw error;
 
-            // Update the state to reflect the new total marks
-            const studentIndex = updatedStudents.findIndex(
-              (s) => s.student_id === student.student_id
-            );
-            if (studentIndex !== -1) {
-              updatedStudents[studentIndex] = {
-                ...updatedStudents[studentIndex],
-                total_marks: totalMarks,
-              };
+            // Only update if the total marks have changed
+            if (data && data.totals !== totalMarks) {
+              // Update the total marks for the student in the table
+              const { error: updateError } = await supabase
+                .from(course)
+                .update({ totals: totalMarks })
+                .match({ student_id: student.student_id });
+
+              if (updateError) throw updateError;
+
+              // Update the state to reflect the new total marks
+              const studentIndex = updatedStudents.findIndex(
+                (s) => s.student_id === student.student_id
+              );
+              if (studentIndex !== -1) {
+                updatedStudents[studentIndex] = {
+                  ...updatedStudents[studentIndex],
+                  total_marks: totalMarks,
+                };
+              }
             }
           }
+
+          // After updating the database, update the state to trigger re-render
+          setStudents(updatedStudents); // This will trigger a re-render
+
+          console.log('Total marks saved successfully');
+
+          // Reload the page after saving total marks
+          window.location.reload(); // This will refresh the page
+        } catch (error) {
+          console.error('Error saving total marks:', error);
         }
-
-        // After updating the database, update the state to trigger re-render
-        setStudents(updatedStudents); // This will trigger a re-render
-
-        console.log('Total marks saved successfully');
-
-        // Reload the page after saving total marks
-        window.location.reload(); // This will refresh the page
-      } catch (error) {
-        console.error('Error saving total marks:', error);
-      }
-    }, 1000); // Adding a 1-second delay to ensure column creation completes before updating marks
-
-  } catch (error) {
-    console.error('Error adding total_marks column:', error);
-  }
-};
-
-
-
+      }, 1000); // Adding a 1-second delay to ensure column creation completes before updating marks
+    } catch (error) {
+      console.error('Error adding total_marks column:', error);
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -219,38 +214,56 @@ const saveTotalMarks = async () => {
         <table className="table-auto w-full border-collapse border border-gray-200">
           <thead className="bg-gray-200 text-gray-700">
             <tr>
-              <th className="border border-gray-300 px-4 py-2 text-left">Students</th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Students
+              </th>
               {evaluations.map((evalName) => (
-                <th key={evalName} className="border border-gray-300 px-4 py-2 text-left">
+                <th
+                  key={evalName}
+                  className="border border-gray-300 px-4 py-2 text-left"
+                >
                   {evalName}
                 </th>
               ))}
-             
             </tr>
           </thead>
           <tbody>
             {students.map((student, studentIndex) => (
-              <tr key={student.student_id} className="odd:bg-gray-50 even:bg-white">
+              <tr
+                key={student.student_id}
+                className="odd:bg-gray-50 even:bg-white"
+              >
                 <td className="border border-gray-300 px-4 py-2">
                   {student.student_id}
                 </td>
                 {evaluations.map((evalName) => (
-                  <td key={evalName} className="border border-gray-300 px-4 py-2">
+                  <td
+                    key={evalName}
+                    className="border border-gray-300 px-4 py-2"
+                  >
                     <input
                       id={`input-${student.student_id}-${evalName}`}
                       type="number"
                       value={marks[student.student_id]?.[evalName] || ''}
                       onChange={(e) =>
-                        handleMarkChange(student.student_id, evalName, e.target.value)
+                        handleMarkChange(
+                          student.student_id,
+                          evalName,
+                          e.target.value
+                        )
                       }
                       onKeyDown={(e) =>
-                        handleEnterKey(e, student.student_id, evalName, studentIndex)
+                        handleEnterKey(
+                          e,
+                          student.student_id,
+                          evalName,
+                          studentIndex
+                        )
                       }
                       className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </td>
                 ))}
-                
               </tr>
             ))}
           </tbody>
