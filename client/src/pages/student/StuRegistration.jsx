@@ -3,8 +3,8 @@ import { AuthContext } from '../../context/Authcontext';
 import { FormContext } from '../../context/FormContext';
 import Select from 'react-select';
 import supabase from '../../config/supabaseClient';
-
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const StuRegistration = () => {
   const { email } = useContext(AuthContext);
@@ -26,7 +26,7 @@ const StuRegistration = () => {
       if (error) {
         console.error('Error fetching backlog data:', error);
       } else {
-        console.log("Backlog Data:", data);
+        console.log('Backlog Data:', data);
         setBacklogSlots(data);
       }
     };
@@ -50,31 +50,30 @@ const StuRegistration = () => {
     fetchSubmissionStatus();
   }, [studentEmail]);
 
- const getFilteredOptions = (slotId) => {
-  const backlogCourse = backlogSlots.find((b) => b.slot === slotId);
+  const getFilteredOptions = (slotId) => {
+    const backlogCourse = backlogSlots.find((b) => b.slot === slotId);
 
-  if (backlogCourse) {
-    // Slot found in backlog, return only that course as the option
-    return [
-      {
-        value: backlogCourse.course_name,
-        label: backlogCourse.course_name,
-      },
-    ];
-  }
+    if (backlogCourse) {
+      // Slot found in backlog, return only that course as the option
+      return [
+        {
+          value: backlogCourse.course_name,
+          label: backlogCourse.course_name,
+        },
+      ];
+    }
 
-  // Slot not in backlog, return default options
-  const slot = slots.find((slot) => slot.id === slotId);
-  if (slot) {
-    return slot.courseOptions.map((option) => ({
-      value: option.label,
-      label: option.label,
-    }));
-  }
+    // Slot not in backlog, return default options
+    const slot = slots.find((slot) => slot.id === slotId);
+    if (slot) {
+      return slot.courseOptions.map((option) => ({
+        value: option.label,
+        label: option.label,
+      }));
+    }
 
-  return []; // No match or options available
-};
-
+    return []; // No match or options available
+  };
 
   const handleSelectChange = (slotId, selected) => {
     setSelectedCourses((prev) => ({
@@ -87,7 +86,7 @@ const StuRegistration = () => {
     e.preventDefault();
 
     if (hasSubmitted) {
-      alert("You've already submitted the form!");
+      toast.success("You've already submitted the form!");
       return;
     }
 
@@ -115,7 +114,9 @@ const StuRegistration = () => {
                   <Select
                     options={getFilteredOptions(slot.id)}
                     value={selectedCourses[slot.id] || null}
-                    onChange={(selected) => handleSelectChange(slot.id, selected)}
+                    onChange={(selected) =>
+                      handleSelectChange(slot.id, selected)
+                    }
                     styles={{
                       control: (base) => ({
                         ...base,
@@ -158,13 +159,14 @@ const StuRegistration = () => {
           )
         ) : (
           <p className="text-center text-lg text-yellow-500">
-            The course registration form is not yet available. Please wait for further instructions.
+            The course registration form is not yet available. Please wait for
+            further instructions.
           </p>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };
 
 export default StuRegistration;
-

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../../config/supabaseClient';
 import EnterMarks from '../../components/faculty/EnterMarks';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreateEvaluation = () => {
   const { course } = useParams();
@@ -34,7 +36,7 @@ const CreateEvaluation = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!evalName || !maxMarks) {
-      alert('All the fields are required.');
+      toast.error('All the fields are required.');
       return;
     }
     try {
@@ -64,7 +66,7 @@ const CreateEvaluation = () => {
       if (evalError) {
         console.error('Error adding evaluation:', evalError);
       } else {
-        console.log('Evaluation added:', evalData);
+        toast.success('Evaluation added:', evalData);
         setEvalName('');
         setMaxMarks(0);
       }
@@ -72,6 +74,7 @@ const CreateEvaluation = () => {
       window.location.reload();
     } catch (error) {
       console.error('Unexpected error:', error);
+      toast.error('Unexpected error');
     }
   };
 
@@ -93,9 +96,10 @@ const CreateEvaluation = () => {
 
       if (error) throw error;
 
-      alert('Cutoffs saved successfully!');
+      toast.success('Cutoffs saved successfully!');
     } catch (error) {
-      console.error('Error saving cutoffs:', error);
+      toast.error('Error saving cutoffs:', error);
+      toast.error('error saving cutoffs:');
     }
   };
 
@@ -177,6 +181,7 @@ const CreateEvaluation = () => {
       </div>
 
       <EnterMarks />
+      <ToastContainer />
     </div>
   );
 };

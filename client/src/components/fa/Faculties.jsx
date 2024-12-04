@@ -1,7 +1,9 @@
-import  { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { CourseContext } from '../../context/CourseContext';
 import FacultyCard from './FacultyCard';
 import supabase from '../../config/supabaseClient';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Faculties = () => {
   const { faculties, fetchFaculties } = useContext(CourseContext);
@@ -27,8 +29,13 @@ const Faculties = () => {
   const handleAddFaculty = async (e) => {
     e.preventDefault();
 
-    if (!newFaculty.faculty_name || !newFaculty.department || !newFaculty.gmail) {
-      setErrorMessage('All fields are required.');
+    if (
+      !newFaculty.faculty_name ||
+      !newFaculty.department ||
+      !newFaculty.gmail
+    ) {
+      // setErrorMessage('All fields are required.');
+      toast.error('All fields are required.');
       return;
     }
 
@@ -44,14 +51,16 @@ const Faculties = () => {
     }
 
     if (data) {
-      setErrorMessage('Faculty with this Gmail already exists.');
+      // setErrorMessage('Faculty with this Gmail already exists.');
+      toast.error('Faculty with this Gmail already exists.');
       return;
     }
 
     const { error } = await supabase.from('faculties').insert([newFaculty]);
 
     if (error) {
-      setErrorMessage('Failed to add faculty. Please try again.');
+      // setErrorMessage('Failed to add faculty. Please try again.');
+      toast.error('Failed to add faculty. Please try again.');
       console.error('Error adding faculty:', error.message);
     } else {
       setErrorMessage('');
@@ -67,7 +76,9 @@ const Faculties = () => {
 
       {/* Add Faculty Form */}
       <div className="m-6 p-6 bg-white rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 text-gray-600">Add New Faculty</h3>
+        <h3 className="text-lg font-semibold mb-4 text-gray-600">
+          Add New Faculty
+        </h3>
         {errorMessage && (
           <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
         )}
@@ -125,13 +136,16 @@ const Faculties = () => {
 
       {/* Faculty List */}
       <div className="m-6 mt-4 bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 text-gray-600">Available Faculties</h3>
+        <h3 className="text-lg font-semibold mb-4 text-gray-600">
+          Available Faculties
+        </h3>
         <div className="flex-1 w-full h-[400px] overflow-auto no-scrollbar space-y-4">
           {faculties.map((faculty, index) => (
             <FacultyCard key={index} faculty={faculty} />
           ))}
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

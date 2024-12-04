@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../../config/supabaseClient';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const EnterMarks = () => {
   const { course } = useParams();
   const [students, setStudents] = useState([]);
@@ -10,7 +13,6 @@ const EnterMarks = () => {
   const [evalName, setEvalName] = useState('');
   const [loading, setLoading] = useState(true);
   const [cutoffs, setCutoffs] = useState({});
-  console.log(cutoffs);
 
   useEffect(() => {
     const CourseStudents = async () => {
@@ -138,11 +140,12 @@ const EnterMarks = () => {
         if (error) throw error;
       }
 
-      console.log('All marks submitted successfully');
+      toast.success('All marks submitted successfully');
       // Reload the page to reflect the updated data
       window.location.reload();
     } catch (error) {
       console.error('Error submitting marks:', error);
+      toast.error('Error submitting marks');
     }
   };
 
@@ -256,12 +259,13 @@ const EnterMarks = () => {
           // After updating the database, update the state to trigger re-render
           setStudents(updatedStudents); // This will trigger a re-render
 
-          console.log('Total marks saved successfully');
+          toast.success('Total marks saved successfully');
 
           // Reload the page after saving total marks
           window.location.reload(); // This will refresh the page
         } catch (error) {
           console.error('Error saving total marks:', error);
+          toast.error('Error saving total marks');
         }
       }, 1000); // Adding a 1-second delay to ensure column creation completes before updating marks
     } catch (error) {
@@ -316,11 +320,12 @@ const EnterMarks = () => {
           }
           setStudents(updatedStudents); // This will trigger a re-render
 
-          console.log('Grades saved successfully');
+          toast.success('Grades saved successfully');
           // Reload the page after saving grades
           window.location.reload();
         } catch (error) {
           console.error('Error saving grades:', error);
+          toast.error('Error saving grades');
         }
       }, 1000);
     } catch (error) {}
@@ -412,6 +417,7 @@ const EnterMarks = () => {
           Calculate Grades
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 };

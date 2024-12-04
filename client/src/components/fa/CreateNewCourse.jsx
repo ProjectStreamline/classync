@@ -3,6 +3,8 @@ import { ImCross } from 'react-icons/im';
 import { CourseContext } from '../../context/CourseContext';
 import supabase from '../../config/supabaseClient';
 import Select from 'react-select';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreateNewCourse = () => {
   const { faculties, fetchFaculties } = useContext(CourseContext);
@@ -30,7 +32,7 @@ const CreateNewCourse = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!courseName || !courseCode || !faculty || !lab) {
-      console.log('Please fill all the fields');
+      toast.error('Please fill all the fields');
       return;
     }
 
@@ -53,9 +55,10 @@ const CreateNewCourse = () => {
     });
 
     if (tableError) {
+      toast.error('Error creating table. Please try again');
       console.log('Error creating table:', tableError);
     } else {
-      console.log('Course created successfully and table initialized');
+      toast.success('Course created successfully');
     }
 
     const { error: attendanceTableError } = await supabase.rpc(
@@ -179,6 +182,7 @@ const CreateNewCourse = () => {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };

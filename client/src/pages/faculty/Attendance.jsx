@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../../config/supabaseClient';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Attendance = () => {
   const { course } = useParams();
@@ -90,7 +92,8 @@ const Attendance = () => {
 
   const handleAddColumn = async () => {
     if (!attendanceDate) {
-      alert('Please select a date.');
+      // alert('Please select a date.');
+      toast.error('Please select a date.');
       return;
     }
 
@@ -106,7 +109,7 @@ const Attendance = () => {
 
         if (error) {
           console.error('Error adding attendance column:', error);
-          alert('Error adding column: ' + error.message);
+          toast.error('Error adding column: ' + error.message);
         } else {
           setColumns((prevColumns) => [...prevColumns, formattedDate]);
         }
@@ -114,7 +117,7 @@ const Attendance = () => {
         console.error('Error adding column:', error);
       }
     } else {
-      alert('Column for this date already exists.');
+      toast.error('Column for this date already exists.');
     }
   };
 
@@ -122,7 +125,7 @@ const Attendance = () => {
     e.preventDefault();
 
     if (!attendanceDate) {
-      alert('Please select a date.');
+      toast.error('Please select a date.');
       return;
     }
 
@@ -169,10 +172,11 @@ const Attendance = () => {
         }
       } catch (error) {
         console.error('Error submitting attendance:', error);
+        toast.error('Error submitting attendance');
       }
     }
 
-    alert('Attendance marked successfully!');
+    toast.success('Attendance marked successfully!');
   };
 
   return (
@@ -257,6 +261,7 @@ const Attendance = () => {
           </button>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

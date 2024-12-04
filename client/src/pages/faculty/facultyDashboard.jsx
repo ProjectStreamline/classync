@@ -2,6 +2,8 @@ import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../context/Authcontext';
 import supabase from '../../config/supabaseClient';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function FacultyDashboard() {
   const { email, logout } = useContext(AuthContext);
@@ -40,15 +42,18 @@ export default function FacultyDashboard() {
 
           if (coursesError) {
             console.error('Error fetching courses:', coursesError.message);
+            toast.error('Error fetching courses.');
           } else if (coursesData) {
             console.log('Fetched courses:', coursesData);
             setCourses(coursesData);
           }
         } else {
           console.error('Faculty ID is undefined or not a number.');
+          toast.error('Faculty ID is undefined or not a number.');
         }
       } else {
         console.error('No faculty data found for the provided email.');
+        toast.error('No faculty data found for the provided email.');
       }
     };
 
@@ -84,6 +89,7 @@ export default function FacultyDashboard() {
           ))}
         </ul>
       </main>
+      <ToastContainer />
     </div>
   );
 }

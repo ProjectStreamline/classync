@@ -1,31 +1,34 @@
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/Authcontext";
-import supabase from "../../config/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../../context/Authcontext';
+import supabase from '../../config/supabaseClient';
+import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Header() {
   const { email, logout } = useContext(AuthContext);
-  const studentEmail = email.replace("@iiitn.ac.in", "");
+  const studentEmail = email.replace('@iiitn.ac.in', '');
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout(); // First, clear the auth state
     setTimeout(() => {
-      navigate("/", { replace: true });
+      navigate('/', { replace: true });
     }, 0);
   };
 
   useEffect(() => {
     const checkSubmissionStatus = async () => {
       const { data, error } = await supabase
-        .from("students")
-        .select("hasSubmitted")
-        .eq("student_id", studentEmail)
+        .from('students')
+        .select('hasSubmitted')
+        .eq('student_id', studentEmail)
         .single();
 
       if (error) {
-        console.error("Error checking submission status:", error);
+        console.error('Error checking submission status:', error);
+        toast.error('error checking submission status');
       } else {
         setHasSubmitted(data?.hasSubmitted);
       }
@@ -37,11 +40,11 @@ export default function Header() {
   }, [studentEmail]);
 
   const handleRegisterClick = () => {
-    navigate("/student/registration");
+    navigate('/student/registration');
   };
 
   const handleBotClick = () => {
-    navigate("/student/bot");
+    navigate('/student/bot');
   };
 
   const RegisterButton = hasSubmitted ? (
@@ -58,7 +61,7 @@ export default function Header() {
   return (
     <nav className="bg-space-200 bg-opacity-80 text-starlight p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-10 backdrop-blur-md">
       <h1 className="text-xl font-bold font-space">
-        {email ? `${email}` : ""}
+        {email ? `${email}` : ''}
       </h1>
       <div className="flex space-x-4">
         {RegisterButton}
@@ -75,6 +78,7 @@ export default function Header() {
           GO to Bot
         </button>
       </div>
+      <ToastContainer />
     </nav>
   );
 }
