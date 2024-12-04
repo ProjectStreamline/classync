@@ -56,7 +56,7 @@ const RegistrationForm = () => {
 
       {/* Right Section: Actions & Stats */}
       <div className="flex flex-col w-full md:w-[48%] bg-white shadow-md rounded-lg p-6">
-        <div className="flex flex-wrap gap-4 mb-6">
+        <div className="flex flex-wrap flex-col gap-4 mb-6">
           <button
             className="flex-1 bg-gray-800 text-white font-semibold rounded-lg py-3 hover:bg-gray-700 transition-all"
             onClick={handleCreateForm}

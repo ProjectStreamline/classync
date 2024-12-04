@@ -28,9 +28,13 @@ const EnterMarks = () => {
           .filter((col) => col !== 'student_id' && col !== 'id');
 
         //filter totals and move to the end
-        const sortedEvalColumns = evalColumns.includes('totals')
-          ? [...evalColumns.filter((col) => col !== 'totals'), 'totals']
-          : evalColumns;
+        const sortedEvalColumns = evalColumns.filter(
+          (col) =>
+            col !== 'grades' && col !== 'totals' && col !== 'grade_pointer'
+        );
+        if (evalColumns.includes('totals')) sortedEvalColumns.push('totals');
+        if (evalColumns.includes('grades')) sortedEvalColumns.push('grades');
+
         setEvaluations(sortedEvalColumns);
 
         // Fetch students and their marks
@@ -173,45 +177,10 @@ const EnterMarks = () => {
 
     let total = 0;
     Object.values(studentMarks).forEach((mark) => {
-      total += parseFloat(mark) ||
-        0; // Handle empty or non-numeric values gracefully
+      total += parseFloat(mark) || 0; // Handle empty or non-numeric values gracefully
     });
     return total;
   };
-
- const calculateGrade = (student_id, totalMarks, cutoffs) => {
-    if (!cutoffs) {
-        console.error('Cutoffs are undefined or null');
-        return 'FF';
-    }
-
-    const numericTotalMarks = Number(totalMarks);
-    if (isNaN(numericTotalMarks)) {
-        console.error(`Total marks for student ${student_id} is not a number:`, totalMarks);
-        return 'FF';
-    }
-
-    let grade;
-
-    if (numericTotalMarks >= cutoffs.AA) {
-        grade = 'AA';
-    } else if (numericTotalMarks >= cutoffs.AB) {
-        grade = 'AB';
-    } else if (numericTotalMarks >= cutoffs.BB) {
-        grade = 'BB';
-    } else if (numericTotalMarks >= cutoffs.BC) {
-        grade = 'BC';
-    } else if (numericTotalMarks >= cutoffs.CD) {
-        grade = 'CD';
-    } else if (numericTotalMarks >= cutoffs.DD) {
-        grade = 'DD';
-    } else {
-        grade = 'FF';
-    }
-
-    console.log(`Student ${student_id} has total marks: ${numericTotalMarks} and grade: ${grade}`);
-    return grade;
-};
 
   const saveTotalMarks = async () => {
     try {
@@ -236,8 +205,8 @@ const EnterMarks = () => {
 
             if (error) throw error;
             const totalMarks = calculateTotalMarks(
-              student.student_id,
-              totalMarks
+              student.student_id
+              // totalMarks
             );
             // Only update if the total marks have changed
             if (data && data.totals !== totalMarks) {
@@ -268,7 +237,7 @@ const EnterMarks = () => {
           toast.success('Total marks saved successfully');
 
           // Reload the page after saving total marks
-          // window.location.reload(); 
+          window.location.reload();
         } catch (error) {
           console.error('Error saving total marks:', error);
           toast.error('Error saving total marks');
@@ -279,6 +248,58 @@ const EnterMarks = () => {
     }
   };
 
+  const calculateGrade = (student_id, totalMarks, cutoffs) => {
+    if (!cutoffs) {
+      console.error('Cutoffs are undefined or null');
+      return 'FF';
+    }
+
+    const numericTotalMarks = Number(totalMarks);
+    if (isNaN(numericTotalMarks)) {
+      console.error(
+        `Total marks for student ${student_id} is not a number:`,
+        totalMarks
+      );
+      return 'FF';
+    }
+
+    let grade;
+    let pointer;
+
+    if (numericTotalMarks >= cutoffs.AA) {
+      grade = 'AA';
+      pointer = 10;
+    } else if (numericTotalMarks >= cutoffs.AB) {
+      grade = 'AB';
+      pointer = 9;
+    } else if (numericTotalMarks >= cutoffs.BB) {
+      grade = 'BB';
+      pointer = 8;
+    } else if (numericTotalMarks >= cutoffs.BC) {
+      grade = 'BC';
+      pointer = 7;
+    } else if (numericTotalMarks >= cutoffs.CC) {
+      grade = 'CC';
+      pointer = 6;
+    } else if (numericTotalMarks >= cutoffs.CD) {
+      grade = 'CD';
+      pointer = 5;
+    } else if (numericTotalMarks >= cutoffs.DD) {
+      grade = 'DD';
+      pointer = 4;
+    } else {
+      grade = 'FF';
+      pointer = 0;
+    }
+
+    console.log(
+      `Student ${student_id} has total marks: ${numericTotalMarks} and grade: ${grade}`
+    );
+    // return grade;
+
+    return { grade, pointer };
+  };
+
   const saveGrades = async () => {
     try {
       //call rpc function
@@ -287,33 +308,41 @@ const EnterMarks = () => {
       });
       if (rpcError) throw rpcError;
 
+      const { error: rpcError1 } = await supabase.rpc(
+        'add_grade_pointer_column',
+        {
+          tab: course,
+        }
+      );
+      if (rpcError1) throw rpcError1;
+
       //wait a bit for the column to be created
       setTimeout(async () => {
         try {
           const updatedStudents = [...students]; // Create a copy of the students array
 
           for (const student of students) {
-
             const { data: totalMarksData, error } = await supabase
-  .from(course)
-  .select('totals')
-  .eq('student_id', student.student_id)
-  .single();
-
-if (error) throw error;
-
-
-const totalMarks = totalMarksData?.totals;
-
-if (totalMarks === undefined || totalMarks === null) {
-  console.error(`Total marks for student ${student.student_id} is not valid:`, totalMarksData);
-  continue; 
-}
-
+              .from(course)
+              .select('totals')
+              .eq('student_id', student.student_id)
+              .single();
 
             if (error) throw error;
 
-            const grade = calculateGrade(
+            const totalMarks = totalMarksData?.totals;
+
+            if (totalMarks === undefined || totalMarks === null) {
+              console.error(
+                `Total marks for student ${student.student_id} is not valid:`,
+                totalMarksData
+              );
+              continue;
+            }
+
+            if (error) throw error;
+
+            const { grade, pointer } = calculateGrade(
               student.student_id,
               totalMarks,
               cutoffs
@@ -324,6 +353,12 @@ if (totalMarks === undefined || totalMarks === null) {
               .update({ grades: grade })
               .match({ student_id: student.student_id });
             if (updateError) throw updateError;
+
+            const { data: pointerData, error: pointerError } = await supabase
+              .from(course)
+              .update({ grade_pointer: pointer })
+              .match({ student_id: student.student_id });
+            if (pointerError) throw pointerError;
 
             const studentIndex = updatedStudents.findIndex(
               (s) => s.student_id === student.student_id
@@ -339,7 +374,7 @@ if (totalMarks === undefined || totalMarks === null) {
 
           toast.success('Grades saved successfully');
           // Reload the page after saving grades
-          // window.location.reload();
+          window.location.reload();
         } catch (error) {
           console.error('Error saving grades:', error);
           toast.error('Error saving grades');
@@ -388,7 +423,7 @@ if (totalMarks === undefined || totalMarks === null) {
                   >
                     <input
                       id={`input-${student.student_id}-${evalName}`}
-                      type="number"
+                      // type="number"
                       value={marks[student.student_id]?.[evalName] || ''}
                       onChange={(e) =>
                         handleMarkChange(
