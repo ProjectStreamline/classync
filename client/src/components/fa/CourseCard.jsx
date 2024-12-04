@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const CourseCard = ({ course }) => {
   return (
     <Link
-      className="bg-white shadow-lg rounded-xl p-4 m-4 cursor-pointer flex flex-row justify-between w-full hover:bg-gray-100 transition-all duration-300"
+      className="bg-white shadow-lg rounded-xl p-4 m-4 cursor-pointer flex flex-row justify-between w-[90%] hover:bg-gray-100 transition-all duration-300"
       to={`/fa/course/${course.course_code}`}
     >
       <div>

@@ -56,28 +56,28 @@ const RegistrationForm = () => {
 
       {/* Right Section: Actions & Stats */}
       <div className="flex flex-col w-full md:w-[48%] bg-white shadow-md rounded-lg p-6">
-        <div className="space-y-4 mb-6">
+        <div className="flex flex-wrap gap-4 mb-6">
           <button
-            className="w-full bg-blue-600 text-white font-semibold rounded-lg py-3 hover:bg-blue-700 transition-all"
+            className="flex-1 bg-gray-800 text-white font-semibold rounded-lg py-3 hover:bg-gray-700 transition-all"
             onClick={handleCreateForm}
           >
             Create Form
           </button>
           <button
-            className="w-full bg-red-600 text-white font-semibold rounded-lg py-3 hover:bg-red-700 transition-all"
+            className="flex-1 bg-gray-800 text-white font-semibold rounded-lg py-3 hover:bg-gray-700 transition-all"
             onClick={toggleIsFloated}
           >
             {isFloated ? 'Stop Registration' : 'Start Registration'}
           </button>
           <Link
             to="/fa/student-data"
-            className="w-full bg-green-600 text-white text-center font-semibold rounded-lg py-3 hover:bg-green-700 transition-all"
+            className="flex-1 bg-gray-800 text-white text-center font-semibold rounded-lg py-3 hover:bg-gray-700 transition-all"
           >
             Registered Student Data
           </Link>
           <Link
             to="/fa/student-data-backlog"
-            className="w-full bg-orange-600 text-white text-center font-semibold rounded-lg py-3 hover:bg-orange-700 transition-all"
+            className="flex-1 bg-gray-800 text-white text-center font-semibold rounded-lg py-3 hover:bg-gray-700 transition-all"
           >
             Backlogs
           </Link>
