@@ -17,6 +17,7 @@ import Bot from './pages/student/bot';
 import Attendance from './pages/faculty/Attendance';
 import Backlogs from './components/fa/backlogs';
 import Grades from './components/fa/grades';
+import AttendenceX from './components/student/Attendence';
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
           <Route path="/student/dashboard" element={<Dashboard />} />
           <Route path="/student/registration" element={<StuRegistration />} />
           <Route path="/student/bot" element={<Bot />} />
+            <Route path="/student/attendence" element={<AttendenceX />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

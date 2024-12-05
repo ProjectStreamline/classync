@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/Authcontext';
 import supabase from '../../config/supabaseClient';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -77,6 +77,9 @@ export default function Header() {
         >
           GO to Bot
         </button>
+        <Link to='/student/attendence' className='p-2 bg-nebula-blue text-white hover:bg-opacity-80 transition duration-200 rounded-md'>
+          Attendence
+        </Link>
       </div>
       <ToastContainer />
     </nav>
