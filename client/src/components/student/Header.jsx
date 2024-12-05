@@ -51,7 +51,7 @@ export default function Header() {
     <div></div>
   ) : (
     <button
-      className="p-2 bg-nebula-pink text-white hover:bg-opacity-80 transition duration-200 rounded-md"
+      className="p-2 bg-nebula-blue text-white hover:bg-opacity-80 transition duration-200 rounded-md"
       onClick={handleRegisterClick}
     >
       Register
@@ -72,7 +72,7 @@ export default function Header() {
           Logout
         </button>
         <button
-          className="p-2 bg-nebula-purple text-white hover:bg-opacity-80 transition duration-200 rounded-md"
+          className="p-2 bg-nebula-blue text-white hover:bg-opacity-80 transition duration-200 rounded-md"
           onClick={handleBotClick}
         >
           GO to Bot
@@ -85,3 +85,4 @@ export default function Header() {
     </nav>
   );
 }
+

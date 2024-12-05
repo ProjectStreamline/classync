@@ -1,12 +1,32 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/Authcontext';
+import supabase from '../config/supabaseClient';
 
 const Login = () => {
   const { setEmail, setIsAuthenticated } = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const facultyEmails = ["rashmi@gmail.com", "kamjeet@gmail.com", "nishant@gmail.com"];
+  const [facultyEmails, setFacultyEmails] = useState([]);
+
+  useEffect(() => {
+    // Fetch faculty emails from the "faculties" table
+    const fetchFacultyEmails = async () => {
+      const { data, error } = await supabase
+        .from('faculties')
+        .select('gmail');
+
+      if (error) {
+        console.error("Error fetching faculty emails:", error);
+      } else {
+        // Extract email addresses from the fetched data
+        const emails = data.map(faculty => faculty.gmail);
+        setFacultyEmails(emails);
+      }
+    };
+
+    fetchFacultyEmails();
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -88,7 +108,6 @@ const Login = () => {
             Sign In
           </button>
         </form>
-      
       </div>
     </div>
   );

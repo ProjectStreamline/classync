@@ -17,11 +17,10 @@ const FaNavbar = () => {
     }, 0);
   };
 
-
   const closeNoticeModal = () => setIsNoticeModalOpen(false);
 
   return (
-    <div className="bg-gray-900 text-white m-8 flex flex-col items-center p-6 rounded-xl sticky top-0 min-h-screen w-[18%]  shadow-lg">
+    <div className="bg-gray-900 text-white m-8 flex flex-col items-center p-6 rounded-xl sticky top-0 min-h-screen w-[18%] shadow-lg">
       {/* User Information */}
       <div className="flex flex-col items-center mb-8 text-center">
         <div className="text-xl font-semibold text-gray-100">Dr. Nikhil</div>
@@ -68,7 +67,7 @@ const FaNavbar = () => {
       {/* Logout Button */}
       <div className="mt-auto mb-6">
         <button
-          className="bg-red-600 text-white font-bold rounded-full w-36 h-12 flex items-center justify-center hover:bg-red-700 transition-all duration-300"
+          className="bg-blue-600 text-white font-bold rounded-full w-36 h-12 flex items-center justify-center hover:bg-blue-500 transition-all duration-300"
           onClick={handleLogout}
         >
           Logout

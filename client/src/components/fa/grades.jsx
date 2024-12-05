@@ -50,7 +50,7 @@ const handleCalculateCgpa = async () => {
         console.log("Total Grade Sum:", totalGrade);
 
         // Calculate CGPA and round to two decimal places using Math.round
-        const calculatedCgpa = Math.round((totalGrade / 16.5) * 100) / 100; // Round to 2 decimal places
+        const calculatedCgpa = Math.round((totalGrade / 18) * 100) / 100; // Round to 2 decimal places
         console.log("Calculated CGPA:", calculatedCgpa);
 
         // Update the cgpa in the database

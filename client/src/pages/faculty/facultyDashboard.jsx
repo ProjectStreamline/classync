@@ -11,7 +11,7 @@ export default function FacultyDashboard() {
   const [name, setName] = useState('');
   const navigate = useNavigate();
 
-  const handlelogout = () => {
+  const handleLogout = () => {
     logout();
     setTimeout(() => {
       navigate('/', { replace: true });
@@ -61,27 +61,27 @@ export default function FacultyDashboard() {
   }, [email]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <header className="flex justify-between items-center bg-blue-600 text-white px-6 py-4 rounded-md shadow-md">
-        <h1 className="text-xl font-bold">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <header className="flex justify-between items-center bg-blue-700 text-white px-6 py-4 rounded-md shadow-lg">
+        <h1 className="text-xl font-semibold">
           Welcome, Professor <span className="capitalize">{name}</span>
         </h1>
         <button
-          onClick={handlelogout}
-          className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md shadow text-white"
+          onClick={handleLogout}
+          className="bg-blue-600 hover:bg-blue-500 transition-colors duration-300 px-4 py-2 rounded-md shadow-md text-white"
         >
           Logout
         </button>
       </header>
 
       <main className="mt-8">
-        <h2 className="text-lg font-semibold text-gray-800">Your Courses:</h2>
-        <ul className="mt-4 space-y-2">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Your Courses:</h2>
+        <ul className="mt-4 space-y-4">
           {courses.map((course, index) => (
             <li key={index}>
               <Link
                 to={`/faculty/dashboard/${course.course_name}`}
-                className="block bg-white hover:bg-blue-50 px-4 py-3 rounded-md shadow-md border border-gray-200"
+                className="block bg-white hover:bg-blue-50 px-6 py-3 rounded-md shadow-md border border-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105"
               >
                 {course.course_name}
               </Link>

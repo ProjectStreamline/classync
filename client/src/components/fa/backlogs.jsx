@@ -1,21 +1,18 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import supabase from "../../config/supabaseClient";
 
-
 function Backlogs() {
-  const [backlogs, setBacklogs] = useState([]); 
+  const [backlogs, setBacklogs] = useState([]);
+  const [courses, setCourses] = useState([]); // For storing course names
   const [newEntry, setNewEntry] = useState({
     student_id: "",
     slot: "",
     course_name: "",
-  }); 
+  });
 
-
+  // Fetching backlogs
   const fetchBacklogs = async () => {
-    const { data, error } = await supabase
-      .from("backlog")
-      .select("*");
-
+    const { data, error } = await supabase.from("backlog").select("*");
     if (error) {
       console.error("Error fetching backlogs:", error.message);
     } else {
@@ -23,29 +20,34 @@ function Backlogs() {
     }
   };
 
+  // Fetching courses
+  const fetchCourses = async () => {
+    const { data, error } = await supabase.from("courses").select("course_name");
+    if (error) {
+      console.error("Error fetching courses:", error.message);
+    } else {
+      setCourses(data);
+    }
+  };
 
   useEffect(() => {
     fetchBacklogs();
+    fetchCourses();
   }, []);
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewEntry((prev) => ({ ...prev, [name]: value }));
   };
 
-
   const handleAddEntry = async (e) => {
     e.preventDefault();
-    const { error } = await supabase
-      .from("backlog")
-      .insert([newEntry]);
-
+    const { error } = await supabase.from("backlog").insert([newEntry]);
     if (error) {
       console.error("Error adding new entry:", error.message);
     } else {
-      setNewEntry({ student_id: "", slot: "", course_name: "" }); 
-      fetchBacklogs(); 
+      setNewEntry({ student_id: "", slot: "", course_name: "" });
+      fetchBacklogs(); // Refresh the list after adding the new entry
     }
   };
 
@@ -104,14 +106,20 @@ function Backlogs() {
         <div>
           <label className="block text-gray-700 font-medium">
             Course Name:
-            <input
-              type="text"
+            <select
               name="course_name"
               value={newEntry.course_name}
               onChange={handleInputChange}
               className="mt-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
               required
-            />
+            >
+              <option value="">Select a course</option>
+              {courses.map((course, index) => (
+                <option key={index} value={course.course_name}>
+                  {course.course_name}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <button

@@ -6,7 +6,7 @@ const FacultyCard = ({ faculty }) => {
       {/* Left Section */}
       <div>
         <h3 className="font-semibold text-lg text-gray-800">{faculty.faculty_name}</h3>
-        <p className="text-sm text-gray-500 mt-2">{faculty.position || 'Position not specified'}</p>
+
       </div>
 
       {/* Right Section */}
