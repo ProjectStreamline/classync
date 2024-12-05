@@ -10,6 +10,7 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState({});
   const [attendanceDate, setAttendanceDate] = useState('');
   const [columns, setColumns] = useState([]);
+  const [attendancePercentages, setAttendancePercentages] = useState({});
 
   useEffect(() => {
     const fetchStudentsAndColumns = async () => {
@@ -133,7 +134,6 @@ const Attendance = () => {
 
     for (const student of students) {
       const value = attendanceData[student.student_id]?.[formattedDate];
-
       const present = value === '0' || value === 0 ? 0 : 1;
 
       try {
@@ -179,10 +179,45 @@ const Attendance = () => {
     toast.success('Attendance marked successfully!');
   };
 
+  const fetchAttendancePercentages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('attendance_percentage')
+        .select('*')
+        .eq('course', course);
+
+      if (error) {
+        console.error('Error fetching attendance percentages:', error);
+      } else {
+        setAttendancePercentages(data);
+      }
+      console.log(data);
+    } catch (error) {
+      console.error('Error fetching attendance percentages:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAttendancePercentages();
+  }, [course, attendanceDate]);
+
+  const calculateAttendancePercentage = (studentId) => {
+    const studentAttendance = attendanceData[studentId] || {};
+    const totalDays = columns.length;
+    const presentDays = Object.values(studentAttendance).filter(
+      (val) => val === 1 || val === '1'
+    ).length;
+    return totalDays > 0
+      ? ((presentDays / totalDays) * 100).toFixed(2)
+      : '0.00';
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Mark Attendance</h1>
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
+    <div className=" bg-gray-100 flex flex-col m-auto p-8 w-full">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6 m-auto">
+        Mark Attendance
+      </h1>
+      <div className="bg-white shadow-md rounded-lg p-6 w-full flex-1">
         <div className="mb-4">
           <label
             htmlFor="attendanceDate"
@@ -217,6 +252,7 @@ const Attendance = () => {
                     {col}
                   </th>
                 ))}
+                <th className="border-b px-4 py-2 text-left">Percentage</th>
               </tr>
             </thead>
             <tbody>
@@ -248,6 +284,9 @@ const Attendance = () => {
                       />
                     </td>
                   ))}
+                  <td className="border-b px-4 py-2">
+                    {calculateAttendancePercentage(student.student_id)}%
+                  </td>
                 </tr>
               ))}
             </tbody>
