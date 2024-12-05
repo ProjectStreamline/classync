@@ -182,71 +182,119 @@ const EnterMarks = () => {
     return total;
   };
 
-  const saveTotalMarks = async () => {
-    try {
-      // Call the RPC to add the `totals` column if it doesn't exist
-      const { error: rpcError } = await supabase.rpc('add_totals_column', {
-        tab: course,
-      });
-      if (rpcError) throw rpcError;
+  const [totalsColumnExists, setTotalsColumnExists] = useState(false);
 
-      // Wait a bit for the column to be created before updating total marks
-      setTimeout(async () => {
-        try {
-          const updatedStudents = [...students]; // Create a copy of the students array
+const checkTotalsColumn = async () => {
+  try {
+    const { data, error } = await supabase
+      .from(course)
+      .select('totals')
+      .limit(1)
+      .single(); // Try to fetch a single record
 
-          for (const student of students) {
-            // Fetch the current total_marks from the database
-            const { data, error } = await supabase
+    if (error) throw error;
+
+    if (data && data.totals !== null) {
+      setTotalsColumnExists(true); // Set to true if the column exists
+    } else {
+      setTotalsColumnExists(false); // Set to false if the column doesn't exist
+    }
+  } catch (error) {
+    console.error('Error checking totals column:', error);
+    setTotalsColumnExists(false);
+  }
+};
+
+useEffect(() => {
+  checkTotalsColumn(); // Call the check on component mount
+}, []);
+
+const saveTotalMarks = async () => {
+  if (totalsColumnExists) {
+    console.log('Total marks column already exists. No need to calculate.');
+    return; // Prevent the function from running if the column exists
+  }
+
+  try {
+    const { error: rpcError } = await supabase.rpc('add_totals_column', {
+      tab: course,
+    });
+    if (rpcError) throw rpcError;
+
+    // Continue with the rest of the logic as you currently have
+    setTimeout(async () => {
+      try {
+        const updatedStudents = [...students];
+        for (const student of students) {
+          const { data, error } = await supabase
+            .from(course)
+            .select('totals')
+            .eq('student_id', student.student_id)
+            .single();
+
+          if (error) throw error;
+          const totalMarks = calculateTotalMarks(student.student_id);
+
+          if (data && data.totals !== totalMarks) {
+            const { error: updateError } = await supabase
               .from(course)
-              .select('totals')
-              .eq('student_id', student.student_id)
-              .single();
+              .update({ totals: totalMarks })
+              .match({ student_id: student.student_id });
 
-            if (error) throw error;
-            const totalMarks = calculateTotalMarks(
-              student.student_id
-              // totalMarks
+            if (updateError) throw updateError;
+
+            const studentIndex = updatedStudents.findIndex(
+              (s) => s.student_id === student.student_id
             );
-            // Only update if the total marks have changed
-            if (data && data.totals !== totalMarks) {
-              // Update the total marks for the student in the table
-              const { error: updateError } = await supabase
-                .from(course)
-                .update({ totals: totalMarks })
-                .match({ student_id: student.student_id });
-
-              if (updateError) throw updateError;
-
-              // Update the state to reflect the new total marks
-              const studentIndex = updatedStudents.findIndex(
-                (s) => s.student_id === student.student_id
-              );
-              if (studentIndex !== -1) {
-                updatedStudents[studentIndex] = {
-                  ...updatedStudents[studentIndex],
-                  total_marks: totalMarks,
-                };
-              }
+            if (studentIndex !== -1) {
+              updatedStudents[studentIndex] = {
+                ...updatedStudents[studentIndex],
+                total_marks: totalMarks,
+              };
             }
           }
-
-          // After updating the database, update the state to trigger re-render
-          setStudents(updatedStudents); // This will trigger a re-render
-
-          toast.success('Total marks saved successfully');
-
-          // Reload the page after saving total marks
-          window.location.reload();
-        } catch (error) {
-          console.error('Error saving total marks:', error);
-          toast.error('Error saving total marks');
         }
-      }, 1000); // Adding a 1-second delay to ensure column creation completes before updating marks
-    } catch (error) {
-      console.error('Error adding total_marks column:', error);
+
+        setStudents(updatedStudents); // Trigger re-render
+        console.log('Total marks saved successfully');
+        window.location.reload();
+      } catch (error) {
+        console.error('Error saving total marks:', error);
+      }
+    }, 1000);
+  } catch (error) {
+    console.error('Error adding total_marks column:', error);
+  }
+};
+
+  let labstate;
+
+const test = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('lab')
+      .eq('course_name', course)
+      .single();
+
+    if (error) {
+      console.error('Error fetching lab status:', error.message);
+      labstate = null; 
+    } else {
+      
+      labstate = data.lab; 
+      console.log('Lab status:', labstate); 
     }
-  };
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    labstate = null; 
+  }
+};
+
+
+test().then(() => {
+  console.log('Lab status stored in labstate:', labstate);
+});
 
   const calculateGrade = (student_id, totalMarks, cutoffs) => {
     if (!cutoffs) {
@@ -266,27 +314,58 @@ const EnterMarks = () => {
     let grade;
     let pointer;
 
+  
+  
     if (numericTotalMarks >= cutoffs.AA) {
       grade = 'AA';
-      pointer = 10;
+      if (labstate){
+        pointer = 10 * 4;
+      } else {
+        pointer = 10 * 3;
+      }
+      
     } else if (numericTotalMarks >= cutoffs.AB) {
       grade = 'AB';
-      pointer = 9;
+   if (labstate){
+        pointer = 9 * 4;
+      } else {
+        pointer = 9 * 3;
+      }
     } else if (numericTotalMarks >= cutoffs.BB) {
       grade = 'BB';
-      pointer = 8;
+     if (labstate){
+        pointer = 8 * 4;
+      } else {
+        pointer = 8 * 3;
+      }
     } else if (numericTotalMarks >= cutoffs.BC) {
       grade = 'BC';
-      pointer = 7;
+      if (labstate){
+        pointer = 7 * 4;
+      } else {
+        pointer = 7 * 3;
+      }
     } else if (numericTotalMarks >= cutoffs.CC) {
       grade = 'CC';
-      pointer = 6;
+      if (labstate){
+        pointer = 6 * 4;
+      } else {
+        pointer = 6 * 3;
+      }
     } else if (numericTotalMarks >= cutoffs.CD) {
       grade = 'CD';
-      pointer = 5;
+ if (labstate){
+        pointer = 5 * 4;
+      } else {
+        pointer = 5 * 3;
+      }
     } else if (numericTotalMarks >= cutoffs.DD) {
       grade = 'DD';
-      pointer = 4;
+    if (labstate){
+        pointer = 4 * 4;
+      } else {
+        pointer = 4 * 3;
+      }
     } else {
       grade = 'FF';
       pointer = 0;
@@ -388,7 +467,8 @@ const EnterMarks = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+
+    <div className="p-6 min-h-screen">
       <p className="text-2xl font-bold text-gray-800 mb-6">Enter Marks</p>
       <div className="overflow-x-auto bg-white rounded-lg shadow-md">
         <table className="table-auto w-full border-collapse border border-gray-200">
@@ -456,12 +536,16 @@ const EnterMarks = () => {
         >
           Submit Marks
         </button>
-        <button
-          onClick={saveTotalMarks}
-          className="mt-4 ml-1 px-6 py-2 bg-blue-500 text-white rounded-md flex-1"
-        >
-          Calculate Total Marks
-        </button>
+        <div>
+    {!totalsColumnExists && (
+      <button
+        onClick={saveTotalMarks}
+        className="mt-4 ml-1 px-6 py-2 bg-blue-500 text-white rounded-md flex-1"
+      >
+        Calculate Total Marks
+      </button>
+    )}
+  </div>
         <button
           onClick={saveGrades}
           className="mt-4 ml-1 px-6 py-2 bg-blue-500 text-white rounded-md flex-1"
@@ -470,7 +554,8 @@ const EnterMarks = () => {
         </button>
       </div>
       <ToastContainer />
-    </div>
+      </div>
+
   );
 };
 

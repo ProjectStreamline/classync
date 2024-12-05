@@ -16,6 +16,7 @@ import GenerateNotice from './pages/fa/GenerateNotice';
 import Bot from './pages/student/bot';
 import Attendance from './pages/faculty/Attendance';
 import Backlogs from './components/fa/backlogs';
+import Grades from './components/fa/grades';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/fa/student-data" element={<StudentData />} />
            <Route path="/fa/student-data-backlog" element={<Backlogs />} />
           <Route path="/fa/course/:id" element={<CourseDetails />} />
+           <Route path="/fa/cgpa" element={<Grades />} />
 
           {/* faculty routes */}
           {/* student routes */}

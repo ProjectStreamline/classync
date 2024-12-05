@@ -52,6 +52,12 @@ const FaNavbar = () => {
           Registration
         </Link>
         <Link
+          to={"/fa/cgpa"}
+          className="w-full mb-3 text-center text-lg font-medium bg-gray-800 hover:bg-gray-700 hover:text-white rounded-lg px-4 py-3 transition-all duration-300"
+        >
+          Grades
+        </Link>
+        <Link
           to={"/fa/generatenotice"}
           className="w-full mb-3 text-center text-lg font-medium bg-gray-800 hover:bg-gray-700 hover:text-white rounded-lg px-4 py-3 transition-all duration-300"
         >
