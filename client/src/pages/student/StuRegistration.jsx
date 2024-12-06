@@ -82,16 +82,93 @@ const StuRegistration = () => {
     }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (hasSubmitted) {
+  //     toast.success("You've already submitted the form!");
+  //     return;
+  //   }
+
+  //   // Submission logic
+  //   // ...
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (hasSubmitted) {
-      toast.success("You've already submitted the form!");
+      alert("You've already submitted the form!");
       return;
     }
 
-    // Submission logic
-    // ...
+    console.log('Selected Courses before insert:', selectedCourses);
+
+    let submissionSuccessful = true;
+
+    for (const slotId in selectedCourses) {
+      const selectedCourse = selectedCourses[slotId]?.value;
+      if (selectedCourse) {
+        console.log(
+          `Attempting to insert into ${selectedCourse} for student ID ${studentEmail}`
+        );
+        // insert into courses table
+        const { data, error } = await supabase
+          .from(selectedCourse)
+          .insert({ student_id: studentEmail });
+
+        if (error) {
+          console.error(
+            `Error inserting into ${selectedCourse}:`,
+            error.message
+          );
+          alert(
+            `An error occurred while inserting into ${selectedCourse}. ${error.message}`
+          );
+          submissionSuccessful = false;
+        } else {
+          console.log(
+            `Successfully inserted student ID ${studentEmail} into ${selectedCourse}`
+          );
+        }
+
+        //insert into attendance table
+        const { data: attendanceData, error: attendanceError } = await supabase
+          .from(`${selectedCourse}_attendance`)
+          .insert({ student_id: studentEmail });
+
+        if (attendanceError) {
+          console.log(
+            `Error inserting into ${selectedCourse}_attendance:`,
+            attendanceError.message
+          );
+          alert(
+            `An error occurred while inserting into ${selectedCourse}. ${error.message}`
+          );
+          submissionSuccessful = false;
+        } else {
+          console.log(
+            `Successfully inserted student ID ${studentEmail} into ${selectedCourse}_attendance`
+          );
+        }
+      } else {
+        toast.warn(`No course selected for slot ID ${slotId}`);
+      }
+    }
+
+    if (submissionSuccessful) {
+      const { data, error } = await supabase
+        .from('students')
+        .update({ hasSubmitted: true })
+        .eq('student_id', studentEmail);
+
+      if (error) {
+        console.error('Error submitting the form:', error);
+        toast.error('An error occurred while submitting the form.');
+      } else {
+        setHasSubmitted(true);
+        toast.success('Form submitted successfully!');
+      }
+    }
   };
 
   return (

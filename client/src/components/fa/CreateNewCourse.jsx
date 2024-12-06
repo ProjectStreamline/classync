@@ -87,10 +87,10 @@ const CreateNewCourse = () => {
       {/* Modal */}
       {openCourse && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg">
+          <div className="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg relative">
             {/* Close button */}
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute right-6 text-gray-500 hover:text-gray-700"
               onClick={() => setOpenCourse(false)}
             >
               <ImCross className="w-5 h-5" />
