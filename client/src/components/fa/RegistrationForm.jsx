@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import MultiSelect from './MultiSelect';
+import MultiSelect from './Multiselect';
 import { FormContext } from '../../context/FormContext';
 import supabase from '../../config/supabaseClient';
 
