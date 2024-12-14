@@ -159,7 +159,7 @@ const CreateEvaluation = () => {
             Set Grade Cutoffs
           </p>
           <div className="grid grid-cols-2 gap-4 mt-4">
-            {['AA', 'AB', 'BB', 'BC', 'CD', 'CC', 'DD', 'FF'].map((grade) => (
+            {['AA', 'AB', 'BB', 'BC', 'CC', 'CD', 'DD', 'FF'].map((grade) => (
               <div key={grade} className="flex items-center">
                 <label className="w-1/4 font-medium">{grade}:</label>
                 <input

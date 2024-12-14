@@ -115,7 +115,7 @@
 
 // export default Login;
 import React, { useContext, useState, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/Authcontext";
 import supabase from "../config/supabaseClient";
 import logo from "../assets/iiitn.png";
 

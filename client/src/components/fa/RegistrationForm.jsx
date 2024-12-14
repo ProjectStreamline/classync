@@ -94,13 +94,12 @@ const RegistrationForm = () => {
               <strong>Branch:</strong> ECE
             </li>
             <li>
-              <strong>Active Courses:</strong> 10
             </li>
             <li>
               <strong>Total Registered Students:</strong> 100
             </li>
             <li>
-              <strong>Remaining Students:</strong> 30
+
             </li>
           </ul>
         </div>

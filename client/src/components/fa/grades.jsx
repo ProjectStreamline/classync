@@ -93,7 +93,7 @@ const handleCalculateCgpa = async () => {
                             disabled={loading}
                             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-300"
                         >
-                            Create and Populate CGPA
+                          Populate CGPA
                         </button>
                         <button
                             onClick={handleCalculateCgpa}
@@ -130,7 +130,7 @@ const handleCalculateCgpa = async () => {
                                 <tr key={row.id} className="border-t">
                                     <td className="px-4 py-2 text-sm text-gray-600">{row.student_id}</td>
                                     <td className="px-4 py-2 text-sm text-gray-600">{row.cgpa}</td>
-                                    {/* Dynamically generate table rows for each course */}
+
                                     {Object.keys(row).map((key, index) => {
                                         if (key !== 'id' && key !== 'student_id' && key !== 'cgpa') {
                                             return (
