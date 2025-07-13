@@ -36,8 +36,6 @@ function App() {
            <Route path="/fa/cgpa" element={<Grades />} />
 
           {/* faculty routes */}
-          {/* student routes */}
-
           <Route path="/faculty/dashboard/" element={<FacultyDashboard />} />
           <Route
             path="/faculty/dashboard/:course"
@@ -56,6 +54,7 @@ function App() {
             element={<Attendance />}
           />
 
+          {/* student routes */}
           <Route path="/student/dashboard" element={<Dashboard />} />
           <Route path="/student/registration" element={<StuRegistration />} />
           <Route path="/student/bot" element={<Bot />} />
