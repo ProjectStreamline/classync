@@ -1,0 +1,87 @@
+name: CI/CD Pipeline
+
+# Trigger the workflow
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job 1: Run tests (optional but recommended)
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: |
+            frontend/package-lock.json
+            backend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm test -- --coverage --watchAll=false
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          npm test
+
+  # Job 2: Build and push Docker images
+  build-and-push:
+    needs: test  # Wait for tests to pass
+    runs-on: ubuntu-latest
+    name: Build and Push Docker Images
+    
+    # Only run on main branch pushes
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to docker hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      # Build and push frontend image
+      - name: Build frontend Docker image
+        run: |
+          docker build -t pradnyakumbhar/classync-frontend:${SHORT_SHA} ./client
+          
+      - name: Push frontend Docker image
+        run: |
+          docker push pradnyakumbhar/classync-frontend:${SHORT_SHA}
+          
+      # Build and push backend image
+      - name: Build backend Docker image
+        run: |
+          docker build -t pradnyakumbhar/classync-backend:${SHORT_SHA} ./server
+          
+      - name: Push backend Docker image
+        run: |
+          docker push pradnyakumbhar/classync-backend:${SHORT_SHA}
